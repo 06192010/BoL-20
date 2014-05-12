@@ -1,6 +1,6 @@
 -- Auto Update by Honda
 
-local version = "0.01"
+local version = "0.02"
 local TESTVERSION = false
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
