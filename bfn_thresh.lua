@@ -86,7 +86,7 @@ function OnLoad()
 			  posE:GetPredictionOnDash(hero, OnDashEFunc)
            end
        end
-           PrintChat("<font color='#c9d7ff'> BIG FAT NIDALEE Thresh Helper </font><font color='#64f879'> v.03 </font><font color='#c9d7ff'> loaded! </font>")
+           PrintChat("<font color='#c9d7ff'> BIG FAT NIDALEE Thresh Helper </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded! </font>")
 end
 
 function OnTick()
