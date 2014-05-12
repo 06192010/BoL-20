@@ -1,5 +1,3 @@
--- Auto Update by Honda
-
 local version = "0.03"
 local TESTVERSION = false
 local AUTOUPDATE = true
