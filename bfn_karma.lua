@@ -135,7 +135,7 @@ function OnTick()
 		CastW()
 	end
 	
-if KarmaConfig.gtfo then
+if KarmaMenu.gtfo then
 if myHero:CanUseSpell(_R) == READY and myHero:CanUseSpell(_E) == READY then
 		CastSpell(_R)
 		CastSpell(_E, myHero)
