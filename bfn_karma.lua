@@ -1,5 +1,5 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.005"
+local version = "0.006"
 local TESTVERSION = false
 
 local AUTOUPDATE = true
@@ -56,6 +56,7 @@ function OnLoad()
 	KarmaMenu:addParam("castq","RQ Cast", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("X"))
 	KarmaMenu:addParam("castrq","RQ/Q Spam ", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("Y"))
 	KarmaMenu:addParam("castw","Auto W", SCRIPT_PARAM_ONOFF, true)
+	KarmaMenu:addParam("gtfo", "GTFO - casts RE ASAP!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("A"))
 
 	KarmaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
 	KarmaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, true)
@@ -83,6 +84,11 @@ function OnLoad()
 	KarmaMenu:addParam("Showautow", "Show Auto W", SCRIPT_PARAM_ONOFF, true)
 	if KarmaMenu.Showautow then
 	KarmaMenu:permaShow("castw")
+	end
+	
+	KarmaConfig:addParam("showgtfo", "Show GTFO", SCRIPT_PARAM_ONOFF, true)
+	if KarmaConfig.showgtfo then
+	KarmaConfig:permaShow("gtfo")	
 	end
 	
 
@@ -129,7 +135,13 @@ function OnTick()
 		CastW()
 	end
 	
-	
+if KarmaConfig.gtfo then
+if myHero:CanUseSpell(_R) == READY and myHero:CanUseSpell(_E) == READY then
+		CastSpell(_R)
+		CastSpell(_E, myHero)
+end
+end
+
 	for i = 1, heroManager.iCount do
 		local hero = heroManager:GetHero(i)
 		if hero.team ~= myHero.team then
