@@ -86,9 +86,9 @@ function OnLoad()
 	KarmaMenu:permaShow("castw")
 	end
 	
-	KarmaConfig:addParam("showgtfo", "Show GTFO", SCRIPT_PARAM_ONOFF, true)
-	if KarmaConfig.showgtfo then
-	KarmaConfig:permaShow("gtfo")	
+	KarmaMenu:addParam("showgtfo", "Show GTFO", SCRIPT_PARAM_ONOFF, true)
+	if KarmaMenu.showgtfo then
+	KarmaMenu:permaShow("gtfo")	
 	end
 	
 
