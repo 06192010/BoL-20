@@ -1,5 +1,5 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.007"
+local version = "0.008"
 local TESTVERSION = false
 
 local AUTOUPDATE = true
@@ -32,8 +32,8 @@ end
 -- main stuff
 
 local QReady, WReady, EReady, RReady = false, false, false, false
-local QRange, QSpeed, QDelay, QWidth = 950, 975, 0.250, 90
-local WRange = 575
+local QRange, QSpeed, QDelay, QWidth = 900, 975, 0.250, 90
+local WRange = 625
 
 local function getHitBoxRadius(target)
 		return GetDistance(target, target.minBBox)
