@@ -44,7 +44,7 @@ function OnLoad()
 Shieldz = {
 		["Karma"] = _E
 	}
-end
+
 	require "Prodiction"
 	require "Collision"
 	QCol = Collision(QRange, QSpeed, QDelay, QWidth)
