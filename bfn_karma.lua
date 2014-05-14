@@ -34,12 +34,17 @@ end
 local QReady, WReady, EReady, RReady = false, false, false, false
 local QRange, QSpeed, QDelay, QWidth = 900, 975, 0.250, 90
 local WRange = 625
+local Shieldz = {}
 
 local function getHitBoxRadius(target)
 		return GetDistance(target, target.minBBox)
 end
 
 function OnLoad()
+Shieldz = {
+		["Karma"] = _E
+	}
+end
 	require "Prodiction"
 	require "Collision"
 	QCol = Collision(QRange, QSpeed, QDelay, QWidth)
@@ -58,6 +63,7 @@ function OnLoad()
 	KarmaMenu:addParam("spamrq","RQ/Q Spam Toggle ", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("Y"))
 	KarmaMenu:addParam("castw","Auto W", SCRIPT_PARAM_ONOFF, true)
 	KarmaMenu:addParam("gtfo", "GTFO - casts RE ASAP!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("A"))
+	KarmaMenu:addParam("evade","Evadee fails dodge cast E", SCRIPT_PARAM_ONOFF, true)
 
 	KarmaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
 	KarmaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, true)
@@ -120,7 +126,11 @@ function OnTick()
 	
 	ts:update()
 	Target = ts.target
-	
+	if KarmaMenu.evade then
+	if _G.Evadeee_impossibleToEvade and myHero:CanUseSpell(Shieldz[myHero.charName]) == READY then
+		CastSpell(Shieldz[myHero.charName])
+	end
+	end
 	if ValidTarget(Target) then
 		ProdQ:GetPredictionCallBack(Target, GetQPos)
 	else
