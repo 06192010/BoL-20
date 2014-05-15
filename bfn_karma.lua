@@ -1,8 +1,8 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.009"
+local version = "0.010"
 local TESTVERSION = false
 
-local AUTOUPDATE = true
+local AUTOUPDATE = false
 
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_karma.lua".."?rand="..math.random(1,10000)
@@ -32,8 +32,8 @@ end
 
 local QReady, WReady, EReady, RReady = false, false, false, false
 local QRange, QSpeed, QDelay, QWidth = 1050, 1742, 0.238, 90
-local QRangeCut = 925
-local WRange = 600
+local QRangeCut = 1000
+local WRange = 650
 local Shieldz = {}
 
 local function getHitBoxRadius(target)
