@@ -2,7 +2,7 @@ if myHero.charName ~= "Karma" then return end
 local version = "0.009"
 local TESTVERSION = false
 
-local AUTOUPDATE = false
+local AUTOUPDATE = true
 
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_karma.lua".."?rand="..math.random(1,10000)
