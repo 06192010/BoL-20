@@ -1,8 +1,8 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.008"
+local version = "0.009"
 local TESTVERSION = false
 
-local AUTOUPDATE = true
+local AUTOUPDATE = false
 
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_karma.lua".."?rand="..math.random(1,10000)
@@ -29,11 +29,11 @@ end
 end
 
 
--- main stuff
 
 local QReady, WReady, EReady, RReady = false, false, false, false
-local QRange, QSpeed, QDelay, QWidth = 900, 975, 0.250, 90
-local WRange = 625
+local QRange, QSpeed, QDelay, QWidth = 1050, 1742, 0.238, 90
+local QRangeCut = 925
+local WRange = 600
 local Shieldz = {}
 
 local function getHitBoxRadius(target)
@@ -51,7 +51,7 @@ Shieldz = {
 	Prod = ProdictManager.GetInstance()
 	ProdQ = Prod:AddProdictionObject(_Q, QRange, QSpeed, QDelay, QWidth)
 	qPos = nil
-	--menu
+
 	
 	KarmaMenu = scriptConfig("BFN Karma Helper", "Karma Helper")
 	ts = TargetSelector(TARGET_LESS_CAST, 1400, true)
@@ -66,15 +66,12 @@ Shieldz = {
 	KarmaMenu:addParam("evade","Evadee fails dodge cast E", SCRIPT_PARAM_ONOFF, true)
 
 	KarmaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
-	KarmaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, true)
-	KarmaMenu:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, true)
+
 	KarmaMenu:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, true)
-	
---	KarmaMenu:addParam("info", "~=[ Killsteal ]=~", SCRIPT_PARAM_INFO, "")
---	KarmaMenu:addParam("KillQ","Auto KS Q", SCRIPT_PARAM_ONOFF, true)
+
 	
 	KarmaMenu:addParam("info", "~=[ Draws ]=~", SCRIPT_PARAM_INFO, "")
-	KarmaMenu:addParam("showQrange","Draw Q Range", SCRIPT_PARAM_ONOFF, false)
+	KarmaMenu:addParam("showQrange","Draw Script Q Range", SCRIPT_PARAM_ONOFF, false)
 	KarmaMenu:addParam("showWrange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
 	KarmaMenu:addParam("showQcollision","Draw Q Collision", SCRIPT_PARAM_ONOFF, false)
 	
@@ -110,8 +107,7 @@ Shieldz = {
 	for i = 1, heroManager.iCount do
 			local hero = heroManager:GetHero(i)
 			if hero.team ~= myHero.team then
-				ProdQ:GetPredictionOnDash(hero, OnDashFunc)
-				ProdQ:GetPredictionAfterDash(hero, AfterDashFunc)
+
 				ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
 			end
 	end
@@ -164,28 +160,12 @@ if myHero:CanUseSpell(_R) == READY and myHero:CanUseSpell(_E) == READY then
 		CastSpell(_E, myHero)
 end
 end
---[[
-	if KarmaMenu.KillQ then
-		if ValidTarget(Target) then
-			ProdQ:GetPredictionCallBack(Target, KSQ)
-		end
-	end
-]]--
+
 
 	for i = 1, heroManager.iCount do
 		local hero = heroManager:GetHero(i)
 		if hero.team ~= myHero.team then
 
-			if KarmaMenu.OnDash then
-				ProdQ:GetPredictionOnDash(hero, OnDashFunc)
-			else
-				ProdQ:GetPredictionOnDash(hero, OnDashFunc, false)
-			end
-			if KarmaMenu.AfterDash then
-				ProdQ:GetPredictionAfterDash(hero, AfterDashFunc)
-			else
-				ProdQ:GetPredictionAfterDash(hero, AfterDashFunc, false)
-			end
 			if KarmaMenu.OnImmobile then
 				ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
 			else
@@ -194,8 +174,7 @@ end
 
 		end
 	end
-	AfterDashPos = nil
-	OnDashPos = nil
+
 	OnImmobilePos = nil
 
 end
@@ -203,7 +182,7 @@ end
 function OnDraw()
 
 	if KarmaMenu.showQrange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRange, 0xb9c3ed)
+		DrawCircle(myHero.x, myHero.y, myHero.z, QRangeCut, 0xb9c3ed)
 	end	
 	
 	if KarmaMenu.showWrange and not myHero.dead then
@@ -231,7 +210,7 @@ function CastW()
 end
 
 function CastRQ(unit,pos)
-	if (QReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+	if (QReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
 		local coll = Collision(QRange, QSpeed, QDelay, QWidth)
 		if not coll:GetMinionCollision(pos, myHero) then
 			if RReady then
@@ -244,31 +223,10 @@ function CastRQ(unit,pos)
 		end
 	end
 end
---[[
-function KSQ(unit,pos)
-	if not myHero.dead and (QReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-		for i = 1, heroManager.iCount do
-			local enemy = heroManager:GetHero(i)
-			local Qdmg = getDmg("Q", enemy, myHero, 3)
-			
-			if not enemy.dead and enemy.team ~= myHero.team and Qdmg > enemy.health and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-					local coll = Collision(QRange, QSpeed, QDelay, QWidth)
-					if not coll:GetMinionCollision(pos, myHero) then
-						
-						CastSpell(_Q, pos.x, pos.z)
-						if KarmaMenu.debugmode then
-							PrintChat("casting Q combo using Q Killsteal!")
-						end
-					end
-			end
-		end
-	end
 
-end
-]]--
 
 function CastQ(unit,pos)
-	if (QReady) and (RReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+	if (QReady) and (RReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
 		local coll = Collision(QRange, QSpeed, QDelay, QWidth)
 		if not coll:GetMinionCollision(pos, myHero) then
 			CastSpell(_R) 
@@ -282,7 +240,7 @@ end
 
 
 function OnImmobileFunc(unit,pos)
-	if (QReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+	if (QReady)  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
 		local coll = Collision(QRange, QSpeed, QDelay, QWidth)
 		if not coll:GetMinionCollision(pos, myHero) then
 			if RReady then
@@ -293,29 +251,3 @@ end
 
 end 
 end
-
-function OnDashFunc(unit, pos, spell)
-
-	if (WReady)  and (GetDistance(pos)  < WRange) then
-
- 	CastSpell(_W, Target)
-			if KarmaMenu.debugmode then
-			PrintChat("casting W using OnDashQFunc!")
-			end
-	end		
-
-
-end
-
-function AfterDashFunc(unit, pos, spell)
-
-	if (WReady)  and (GetDistance(pos)  < WRange) then
-
- 	CastSpell(_W, Target)
-			if KarmaMenu.debugmode then
-			PrintChat("casting W using  AfterDashQFunc!")
-			end
-	end		
-
-end
-
