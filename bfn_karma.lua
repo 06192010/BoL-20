@@ -1,8 +1,9 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.010"
+local version = "0.011"
 local TESTVERSION = false
 
 local AUTOUPDATE = true
+
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_karma.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH.."bfn_karma.lua"
@@ -30,8 +31,8 @@ end
 
 
 local QReady, WReady, EReady, RReady = false, false, false, false
-local QRange, QSpeed, QDelay, QWidth = 1050, 1742, 0.238, 90
-local QRangeCut = 1000
+local QRange, QSpeed, QDelay, QWidth = 1050, 1720, 0.240, 90
+local QRangeCut = 975
 local WRange = 650
 local Shieldz = {}
 
