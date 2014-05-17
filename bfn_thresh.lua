@@ -1,4 +1,4 @@
-local version = "0.1"
+local version = "0.2"
 local TESTVERSION = false
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -35,11 +35,13 @@ end
 
 local QREADY = false
 local RREADY = false
-
-local QRange, QSpeed, QDelay, QWidth = 1075, 1200, 0.500, 70
+-- 1075 1200, 0.500, 70
+local QRange, QSpeed, QDelay, QWidth, QRangeCut = 1075, 1900, 0.500, 80, 1000
 local WRange = 950
-local ERange, ESpeed, EDelay, EWidth = 500, 1100, 0.250, 180
-local RRange = 400
+--local ERange, ESpeed, EDelay, EWidth = 500, 1100, 0.250, 180
+local ERange, ESpeed, EDelay, EWidth, ERangeCut = 500, 500, 0.250, 180, 490
+local RRange = 390
+
 
 
 
@@ -55,6 +57,7 @@ function OnLoad()
     --Menu
     ThreshMenu = scriptConfig("BFN Thresh Helper", "Thresh Helper")
 	
+ --   ThreshMenu:addParam("fight","combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
     ThreshMenu:addParam("Combo","Throw Q", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("Y"))
 	
 	ThreshMenu:addParam("info", "~=[ Ult Settings ]=~", SCRIPT_PARAM_INFO, "")	
@@ -110,6 +113,12 @@ function OnTick()
         end
     end
     
+--[[    if ThreshMenu.fight then
+        if ValidTarget(Target) then
+                    ProdQ:GetPredictionCallBack(Target, fight)
+        end
+    end
+]]--
     
 
     for i = 1, heroManager.iCount do
@@ -164,25 +173,33 @@ function GetQPos(unit, pos)
         qPos = pos
 end
 function CastQ(unit,pos)
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) and myHero:GetSpellData(_Q).name == "ThreshQ" then    
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) and myHero:GetSpellData(_Q).name == "ThreshQ" then    
 	   local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
             end
     end
 end
-
-
+--[[
+function CastQ(unit,pos)
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) and myHero:GetSpellData(_Q).name == "ThreshQ" then    
+	   local coll = Collision(QRange, QSpeed, QDelay, QWidth)
+            if not coll:GetMinionCollision(pos, myHero) then
+                CastSpell(_Q, pos.x, pos.z)
+            end
+    end
+end
+]]--
 
 function OnDashEFunc (unit, pos, spell)
- if GetDistance(pos) < spell.range and myHero:CanUseSpell(spell.Name) == READY then
+ if GetDistance(pos) < ERangeCut and myHero:CanUseSpell(spell.Name) == READY then
             CastSpell(spell.Name, pos.x, pos.z)
   end
 end 
 
 function AfterDashQFunc(unit, pos, spell)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) and myHero:GetSpellData(_Q).name == "ThreshQ" then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) and myHero:GetSpellData(_Q).name == "ThreshQ" then
 	local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -193,7 +210,7 @@ end
 
 function AfterImmobileQFunc(unit, pos, spell)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) and myHero:GetSpellData(_Q).name == "ThreshQ" then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) and myHero:GetSpellData(_Q).name == "ThreshQ" then
         local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -203,7 +220,7 @@ end
 
 function OnImmobileQFunc(unit, pos, spell)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) and myHero:GetSpellData(_Q).name == "ThreshQ" then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) and myHero:GetSpellData(_Q).name == "ThreshQ" then
         local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -218,7 +235,7 @@ function OnDraw()
 	end	
 	
 	if ThreshMenu.showQrange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRange, 0xb9c3ed)
+		DrawCircle(myHero.x, myHero.y, myHero.z, QRangeCut, 0xb9c3ed)
 	end	
 	
 	if ThreshMenu.showWrange and not myHero.dead then
@@ -226,7 +243,7 @@ function OnDraw()
 	end	
 	
 	if ThreshMenu.showErange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, ERange, 0x747ea4)
+		DrawCircle(myHero.x, myHero.y, myHero.z, ERangeCut, 0x747ea4)
 	end	
 	
 	if ThreshMenu.showRrange and not myHero.dead then
@@ -235,3 +252,4 @@ function OnDraw()
 		   
 
 end
+
