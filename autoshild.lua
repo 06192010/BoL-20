@@ -68,11 +68,11 @@ function OnTick()
 
 if spellshieldcharexist == true then
      if AutoShildExtendedMenu.ShildMode == 1 then
-     	BlockChat()
+ 
 		shieldall = true
 
      elseif AutoShildExtendedMenu.ShildMode == 2 then
-     	BlockChat()
+
 		shieldall = false
 
      end
