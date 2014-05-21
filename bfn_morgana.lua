@@ -1,4 +1,4 @@
-local version = "0.2"
+local version = "0.3"
 local TESTVERSION = false
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -36,11 +36,12 @@ local QREADY = false
 local WREADY = false
 local EREADY = false
 local RREADY = false
-
-local QRange, QSpeed, QDelay, QWidth = 1300, 1200, 0.250, 80 -- morgana
+-- delay 233 speed 1200
+local QRange, QSpeed, QDelay, QWidth = 1300, 1200, 0.240, 80 -- morgana
 local WRange, WSpeed, WDelay, WWidth, WRadius = 900, 3.0, 280, 105, 175	-- morgana
-local RRange = 625 --morgana
+local RRange, RRangeCut = 625, 585 --morgana
 local ERange = 725
+local QRangeCut = 1200
 
 
 function OnLoad()
@@ -50,24 +51,55 @@ function OnLoad()
     Prod = ProdictManager.GetInstance()
 									-- range, speed, delay, width
     ProdQ = Prod:AddProdictionObject(_Q, QRange, QSpeed, QDelay, QWidth) 
-	ProdW = Prod:AddProdictionObject(_W, WRange, WSpeed, WDelay, WWidth)	
     qPos = nil	
-    wPos = nil
+
+	-- interrupter start
+	enemyHeroes = nil
+	ToInterrupt = {}
+	InterruptList = {
+		{ charName = "Caitlyn", spellName = "CaitlynAceintheHole"},
+		{ charName = "FiddleSticks", spellName = "Crowstorm"},
+--		{ charName = "FiddleSticks", spellName = "DrainChannel"},
+		{ charName = "Galio", spellName = "GalioIdolOfDurand"},
+		{ charName = "Karthus", spellName = "FallenOne"},
+		{ charName = "Katarina", spellName = "KatarinaR"},
+		{ charName = "Malzahar", spellName = "AlZaharNetherGrasp"},
+		{ charName = "MissFortune", spellName = "MissFortuneBulletTime"},
+		{ charName = "Nunu", spellName = "AbsoluteZero"},
+		{ charName = "Pantheon", spellName = "Pantheon_GrandSkyfall_Jump"},
+		{ charName = "Shen", spellName = "ShenStandUnited"},
+		{ charName = "Urgot", spellName = "UrgotSwap2"},
+		{ charName = "Varus", spellName = "VarusQ"},
+		{ charName = "Warwick", spellName = "InfiniteDuress"}
+	}
+	enemyHeroes = GetEnemyHeroes()
+		for _, enemy in pairs(enemyHeroes) do
+		for _, champ in pairs(InterruptList) do
+			if enemy.charName == champ.charName then
+				table.insert(ToInterrupt, champ.spellName)
+			end
+		end
+	end
+-- interrupter end
+	
+	
     --Menu
     MorganaMenu = scriptConfig("BFN Morgana Helper", "Morgana Helper")
 	
-    MorganaMenu:addParam("Combo","Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+    MorganaMenu:addParam("Combo","Cast Q Self", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+    MorganaMenu:addParam("Combo","Auto Spam Q ON/OFF", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("Y"))
+	MorganaMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
+	MorganaMenu:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
 	
 	MorganaMenu:addParam("info", "~=[ Ult Settings ]=~", SCRIPT_PARAM_INFO, "")	
 	MorganaMenu:addParam("useult","Use Auto Ult", SCRIPT_PARAM_ONOFF, true)
 	MorganaMenu:addParam("ultenemys", "Auto Ult if X enemys in range", SCRIPT_PARAM_SLICE, 2, 1, 5, 0)
 	
 	MorganaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
-    MorganaMenu:addParam("AfterDash","AfterDash Q", SCRIPT_PARAM_ONOFF, true)
-    MorganaMenu:addParam("OnDash","OnDash Q", SCRIPT_PARAM_ONOFF, false)
-    MorganaMenu:addParam("AfterImmobile","AfterImmobile Q", SCRIPT_PARAM_ONOFF, true)
-    MorganaMenu:addParam("OnImmobile","OnImmobile Q", SCRIPT_PARAM_ONOFF, true)
-    MorganaMenu:addParam("OnImmobileW","OnImmobile W", SCRIPT_PARAM_ONOFF, true)
+    MorganaMenu:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, true)
+    MorganaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
+    MorganaMenu:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, true)
+    MorganaMenu:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, true)
 
 	
 	MorganaMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
@@ -83,11 +115,10 @@ function OnLoad()
      for i = 1, heroManager.iCount do
            local hero = heroManager:GetHero(i)
            if hero.team ~= myHero.team then
-              ProdQ:GetPredictionAfterDash(hero, AfterDashQFunc)
-              ProdQ:GetPredictionOnDash(hero, OnDashQFunc)
-              ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileQFunc)	  
-              ProdQ:GetPredictionOnImmobile(hero, OnImmobileQFunc)
-              ProdW:GetPredictionOnImmobile(hero, OnImmobileWFunc)
+              ProdQ:GetPredictionAfterDash(hero, AfterDashFunc)
+              ProdQ:GetPredictionOnDash(hero, OnDashFunc)
+              ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc)	  
+              ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
            end
        end
            PrintChat("<font color='#c9d7ff'> BIG FAT NIDALEE Morgana Helper </font><font color='#64f879'> v. "..version.." </font><font color='#c9d7ff'> loaded! </font>")
@@ -107,7 +138,7 @@ function OnTick()
         ProdQ:GetPredictionCallBack(Target, GetQPos)
     else
         qPos = nil
-        wPos = nil
+
     end
 		
 
@@ -126,35 +157,31 @@ function OnTick()
 		 
 			
             if MorganaMenu.AfterDash then
-                ProdQ:GetPredictionAfterDash(hero, AfterDashQFunc)
+                ProdQ:GetPredictionAfterDash(hero, AfterDashFunc)
             else
-                ProdQ:GetPredictionAfterDash(hero, AfterDashQFunc, false)
+                ProdQ:GetPredictionAfterDash(hero, AfterDashFunc, false)
             end	
 			
             if MorganaMenu.OnDash then
-                ProdQ:GetPredictionOnDash(hero, OnDashQFunc)
+                ProdQ:GetPredictionOnDash(hero, OnDashFunc)
             else
-                ProdQ:GetPredictionOnDash(hero, OnDashQFunc, false)
+                ProdQ:GetPredictionOnDash(hero, OnDashFunc, false)
             end
             
             if MorganaMenu.AfterImmobile then
-                ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileQFunc)
+                ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc)
             else
-                ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileQFunc, false)
+                ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc, false)
             end
             
             
             if MorganaMenu.OnImmobile then
-                ProdQ:GetPredictionOnImmobile(hero, OnImmobileQFunc)
+                ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
             else
-                ProdQ:GetPredictionOnImmobile(hero, OnImmobileQFunc, false)
+                ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc, false)
             end
             
-            if MorganaMenu.OnImmobileW then
-                ProdW:GetPredictionOnImmobile(hero, OnImmobileWFunc)
-            else
-                ProdW:GetPredictionOnImmobile(hero, OnImmobileWFunc, false)
-            end
+
 
         end
     end
@@ -167,10 +194,32 @@ function OnTick()
     OnImmobilePos = nil	
  
 end
+-- interrupter start
+function OnProcessSpell(unit, spell)
+	if #ToInterrupt > 0 and MorganaMenu.interrupter and QREADY then
+		for _, ability in pairs(ToInterrupt) do
+			if spell.name == ability and unit.team ~= myHero.team then
+			
 
+             
+if (QREADY) and (GetDistance(unit) < QRangeCut) then    
+	   local coll = Collision(QRange, QSpeed, QDelay, QWidth)
+            if not coll:GetMinionCollision(unit, myHero) then
+                CastSpell(_Q, unit.x, unit.z)
+				if MorganaMenu.interrupterdebug then print("Tried to interrupt " .. spell.name) end
+            end
+   
+        end
+			end
+		end
+	end
+end
+
+				
+-- interrupter end
 function UltEnemys()
 		if RREADY and MorganaMenu.useult then
-		if CountEnemyHeroInRange(RRange) >= MorganaMenu.ultenemys then
+		if CountEnemyHeroInRange(RRangeCut) >= MorganaMenu.ultenemys then
 			CastSpell(_R)
 		end
 	end
@@ -178,11 +227,9 @@ end
 function GetQPos(unit, pos)
         qPos = pos
 end
-function GetWPos(unit, pos)
-        wPos = pos
-end
+
 function CastQ(unit,pos)
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then    
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then    
 	   local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -197,9 +244,9 @@ function CastW(unit,pos)
 end
 
 
-function OnDashQFunc(unit, pos)
+function OnDashFunc(unit, pos)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
 	local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -207,9 +254,9 @@ function OnDashQFunc(unit, pos)
     end
 
 end
-function AfterDashQFunc(unit, pos)
+function AfterDashFunc(unit, pos)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
 	local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -218,9 +265,9 @@ function AfterDashQFunc(unit, pos)
 
 end
 
-function AfterImmobileQFunc(unit, pos)
+function AfterImmobileFunc(unit, pos)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
         local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
@@ -228,21 +275,20 @@ function AfterImmobileQFunc(unit, pos)
     end
 end
 
-function OnImmobileQFunc(unit, pos)
+function OnImmobileFunc(unit, pos)
 
-    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+    if (QREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
         local coll = Collision(QRange, QSpeed, QDelay, QWidth)
             if not coll:GetMinionCollision(pos, myHero) then
                 CastSpell(_Q, pos.x, pos.z)
             end
     end
-end
-function OnImmobileWFunc(unit, pos)
-
-    if (WREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
-                CastSpell(_W, pos.x, pos.z)
+	
+	if (WREADY) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then    
+                CastSpell(_W, unit.x, unit.z)
     end
 end
+
 
 function OnDraw()
 
@@ -251,7 +297,7 @@ function OnDraw()
 	end	
 	
 	if MorganaMenu.showQrange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRange, 0xb9c3ed)
+		DrawCircle(myHero.x, myHero.y, myHero.z, QRangeCut, 0xb9c3ed)
 	end	
 	
 	if MorganaMenu.showWrange and not myHero.dead then
@@ -263,7 +309,7 @@ function OnDraw()
 	end	
 	
 	if MorganaMenu.showRrange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, RRange, 0xFFFFFF)
+		DrawCircle(myHero.x, myHero.y, myHero.z, RRangeCut, 0xFFFFFF)
 	end
 		   
 
