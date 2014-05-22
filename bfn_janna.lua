@@ -1,7 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.02"
-local TESTVERSION = false
+local version = "0.03"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -42,16 +41,16 @@ function OnLoad ()
 	-- menu
 	JannaMenu = scriptConfig("Janna Helper", "Janna Helper")
 	
-	JannaMenu:addParam("testq","Cast Q", SCRIPT_PARAM_ONOFF, false)
+	JannaMenu:addParam("testq","Cast Q", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("A"))
 	JannaMenu:addParam("debug","Debug Mode", SCRIPT_PARAM_ONOFF, false)
 	JannaMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
 	
 	JannaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
-    JannaMenu:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, false)
-    JannaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
-    JannaMenu:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, false)
-    JannaMenu:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, false)
+    JannaMenu:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, true)
+    JannaMenu:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, true)
+    JannaMenu:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, true)
+    JannaMenu:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, true)
 	
 	JannaMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
 	JannaMenu:addParam("showQrange", "Show Q Range", SCRIPT_PARAM_ONOFF, true)
@@ -93,32 +92,34 @@ function OnLoad ()
 		
 		{ charName = "LeeSin", spellName = "blindmonkqtwo"}, -- Q
 -- not tested yet
-		{ charName = "Lux", spellName = "LuxMaliceCannon"}, -- R
-		{ charName = "Malphite", spellName = "UFSlash"}, -- R
-		{ charName = "Maokai", spellName = "MaokaiUnstableGrowth"}, -- W
+--		{ charName = "Lux", spellName = "LuxMaliceCannon"}, -- R
+--		{ charName = "Malphite", spellName = "UFSlash"}, -- R
+--		{ charName = "Maokai", spellName = "MaokaiUnstableGrowth"}, -- W
 		{ charName = "Nautilus", spellName = "NautilusAnchorDrag"}, -- Q
-		{ charName = "Nocturne", spellName = "NocturneParanoia"}, -- R
+--		{ charName = "Nocturne", spellName = "NocturneParanoia"}, -- R
 		{ charName = "Quinn", spellName = "QuinnE"}, -- E
-		{ charName = "Renekton", spellName = "RenektonSliceAndDice"}, -- E
-		{ charName = "Rengar", spellName = "RengarNewPassive"}, -- Passive
-		{ charName = "Riven", spellName = "RivenTriCleave"}, -- Q
-		{ charName = "Riven", spellName = "RivenFeint "}, -- E
-		{ charName = "Sejuani", spellName = "SejuaniArcticAssault "}, -- Q
+		{ charName = "Renekton", spellName = "RenektonSliceAndDice"}, -- E    nur erste e
+--		{ charName = "Rengar", spellName = "RengarP"}, -- Passive   ne pravilnoe nazvanie
+--		{ charName = "Riven", spellName = "RivenTriCleave"}, -- Q
+--		{ charName = "Riven", spellName = "RivenFeint "}, -- E
+		{ charName = "Sejuani", spellName = "SejuaniArcticAssault"}, -- Q
 		{ charName = "Shaco", spellName = "Deceive"}, -- Q
 		{ charName = "Shyvana", spellName = "ShyvanaTransformCast"}, -- R
-		{ charName = "Skarner", spellName = "SkarnerImpale"}, -- R
-		{ charName = "Thresh", spellName = "ThreshQPullMissile"}, -- Q
+		{ charName = "Skarner", spellName = "SkarnerImpale"}, -- R  ult hz otmenjaetsa li
+--		{ charName = "Thresh", spellName = "Thresh_Q_whip_beam"}, -- Q  ne to nazvanie
 		{ charName = "Tryndamere", spellName = "slashCast"}, -- E
 		{ charName = "Velkoz", spellName = "VelkozR"}, -- R
-		{ charName = "Vi", spellName = "ViR"}, -- R
+--		{ charName = "Vi", spellName = "ViR"}, -- R
 		{ charName = "Vi", spellName = "ViQ"}, -- Q
-		{ charName = "Wukong", spellName = "MonkeyKingNimbus"}, -- E
-		{ charName = "Xerath", spellName = "XerathArcanopulse"}, -- Q
-		{ charName = "Xerath", spellName = "XerathArcaneBarrageWrapper"}, -- R
+--		{ charName = "Wukong", spellName = "monkeykingnimbus"}, -- E
+		{ charName = "Xerath", spellName = "XerathArcanopulseChargeUp"}, -- Q
+		{ charName = "Xerath", spellName = "XerathLocusOfPower2"}, -- R
 		{ charName = "XinZhao", spellName = "XenZhaoSweep"}, -- E
 		{ charName = "Yasuo", spellName = "YasuoDashWrapper"}, -- E
 		{ charName = "Zac", spellName = "ZacE"}, -- E
-		{ charName = "Zed", spellName = "ZedShadowDashMissile"}, -- W
+--		{ charName = "Zed", spellName = "ZedShadowDash2"}, -- W
+--		{ charName = "Zed", spellName = "ReapTheWhirlwind"}, -- W
+--		{ charName = "Zed", spellName = "SummonerFlash"}, -- Flash  rabotaet !!!!!!!!!
 		
 		{ charName = "Leona", spellName = "LeonaZenithBlade"},
 		{ charName = "Karthus", spellName = "FallenOne"},
@@ -159,8 +160,9 @@ end
 
 
 function OnTick()
- if onHowlingGale == true then CastSpell(_Q)
- end
+
+	if onHowlingGale == true then CastSpell(_Q) end --interrupter
+	
 	ts:update()
 	Target = ts.target
 	
@@ -340,9 +342,13 @@ end
 function OnGainBuff(unit, buff)
         if unit == nil or buff == nil then return end
         if unit.isMe and buff then
+		if JannaMenu.debugmode then
                 PrintChat("GAINED: " .. buff.name)
+		end
 if buff.name == "HowlingGale" then
+if JannaMenu.debugmode then
                         PrintChat("TRUE")
+end
                         onHowlingGale = true
                 end 
 end
@@ -351,11 +357,11 @@ end
 function OnLoseBuff(unit, buff)
         if unit == nil or buff == nil then return end
         if unit.isMe and buff then
-                --PrintChat("LOST: " .. buff.name)
+		if JannaMenu.debugmode then
+                PrintChat("LOST: " .. buff.name)
+		end
                 if buff.name == "HowlingGale" then
                         onHowlingGale = false
                 end
         end
 end 
-
-
