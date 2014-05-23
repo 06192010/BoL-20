@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.04"
+local version = "0.05"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -55,6 +55,12 @@ function OnLoad ()
 	
 	JannaMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
 	JannaMenu:addParam("showQrange", "Show Q Range", SCRIPT_PARAM_ONOFF, true)
+	
+	JannaMenu:addParam("sep", "~=[ NEEDS RELOAD ]=~", SCRIPT_PARAM_INFO, "")
+	JannaMenu:addParam("ShowQCast", "Show Q Cast", SCRIPT_PARAM_ONOFF, true)
+	if JannaMenu.ShowQCast then
+	JannaMenu:permaShow("testq")
+	end
 	
 	ts = TargetSelector(TARGET_LESS_CAST, 1400, true)
 	ts.name = "JannaMenu"
