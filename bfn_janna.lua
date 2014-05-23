@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.03"
+local version = "0.04"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -42,9 +42,10 @@ function OnLoad ()
 	JannaMenu = scriptConfig("Janna Helper", "Janna Helper")
 	
 	JannaMenu:addParam("testq","Cast Q", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("A"))
-	JannaMenu:addParam("debug","Debug Mode", SCRIPT_PARAM_ONOFF, false)
+	JannaMenu:addParam("debugmode","Debug Mode", SCRIPT_PARAM_ONOFF, false)
 	JannaMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
+	JannaMenu:addParam("packets","Use Packets", SCRIPT_PARAM_ONOFF, true)
 	
 	JannaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
     JannaMenu:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, true)
@@ -76,51 +77,31 @@ function OnLoad ()
 		{ charName = "Diana", spellName = "DianaTeleport"}, -- R
 		{ charName = "Fiora", spellName = "FioraQ"}, -- Q	
 		{ charName = "Fizz", spellName = "FizzPiercingStrike"}, -- Q	
---		{ charName = "Fizz", spellName = "fizzjumptwo"}, -- E	
 		{ charName = "FiddleSticks", spellName = "Crowstorm"},
 		{ charName = "FiddleSticks", spellName = "DrainChannel"},
 		{ charName = "Galio", spellName = "GalioIdolOfDurand"},
 		{ charName = "Gragas", spellName = "GragasE"}, -- E
---		{ charName = "Graves", spellName = "GravesMove"}, -- E
---		{ charName = "Hecarim", spellName = "HecarimRamp"}, -- E
---		{ charName = "Hecarim", spellName = "HecarimUlt"}, -- R
 		{ charName = "Irelia", spellName = "IreliaGatotsu"}, -- Q
 		{ charName = "JarvanIV", spellName = "JarvanIVDemacianStandard"}, -- Q
 		{ charName = "Jax", spellName = "JaxLeapStrike"}, -- Q
 		{ charName = "Khazix", spellName = "KhazixE"}, -- E
 		{ charName = "Leblanc", spellName = "LeblancSlide"}, -- W
-		
 		{ charName = "LeeSin", spellName = "blindmonkqtwo"}, -- Q
--- not tested yet
---		{ charName = "Lux", spellName = "LuxMaliceCannon"}, -- R
---		{ charName = "Malphite", spellName = "UFSlash"}, -- R
---		{ charName = "Maokai", spellName = "MaokaiUnstableGrowth"}, -- W
 		{ charName = "Nautilus", spellName = "NautilusAnchorDrag"}, -- Q
---		{ charName = "Nocturne", spellName = "NocturneParanoia"}, -- R
 		{ charName = "Quinn", spellName = "QuinnE"}, -- E
 		{ charName = "Renekton", spellName = "RenektonSliceAndDice"}, -- E    nur erste e
---		{ charName = "Rengar", spellName = "RengarP"}, -- Passive   ne pravilnoe nazvanie
---		{ charName = "Riven", spellName = "RivenTriCleave"}, -- Q
---		{ charName = "Riven", spellName = "RivenFeint "}, -- E
 		{ charName = "Sejuani", spellName = "SejuaniArcticAssault"}, -- Q
 		{ charName = "Shaco", spellName = "Deceive"}, -- Q
 		{ charName = "Shyvana", spellName = "ShyvanaTransformCast"}, -- R
 		{ charName = "Skarner", spellName = "SkarnerImpale"}, -- R  ult hz otmenjaetsa li
---		{ charName = "Thresh", spellName = "Thresh_Q_whip_beam"}, -- Q  ne to nazvanie
 		{ charName = "Tryndamere", spellName = "slashCast"}, -- E
 		{ charName = "Velkoz", spellName = "VelkozR"}, -- R
---		{ charName = "Vi", spellName = "ViR"}, -- R
 		{ charName = "Vi", spellName = "ViQ"}, -- Q
---		{ charName = "Wukong", spellName = "monkeykingnimbus"}, -- E
 		{ charName = "Xerath", spellName = "XerathArcanopulseChargeUp"}, -- Q
 		{ charName = "Xerath", spellName = "XerathLocusOfPower2"}, -- R
 		{ charName = "XinZhao", spellName = "XenZhaoSweep"}, -- E
 		{ charName = "Yasuo", spellName = "YasuoDashWrapper"}, -- E
 		{ charName = "Zac", spellName = "ZacE"}, -- E
---		{ charName = "Zed", spellName = "ZedShadowDash2"}, -- W
---		{ charName = "Zed", spellName = "ReapTheWhirlwind"}, -- W
---		{ charName = "Zed", spellName = "SummonerFlash"}, -- Flash  rabotaet !!!!!!!!!
-		
 		{ charName = "Leona", spellName = "LeonaZenithBlade"},
 		{ charName = "Karthus", spellName = "FallenOne"},
 		{ charName = "Katarina", spellName = "KatarinaR"},
@@ -147,10 +128,10 @@ function OnLoad ()
      for i = 1, heroManager.iCount do
            local hero = heroManager:GetHero(i)
            if hero.team ~= myHero.team then
-              ProdQmin:GetPredictionAfterDash(hero, AfterDashFunc)
-              ProdQmin:GetPredictionOnDash(hero, OnDashFunc)
-              ProdQmin:GetPredictionAfterImmobile(hero, AfterImmobileFunc)	  
-              ProdQmin:GetPredictionOnImmobile(hero, OnImmobileFunc)
+              ProdQmin:GetPredictionAfterDash(hero, CastQMin)
+              ProdQmin:GetPredictionOnDash(hero, CastQMin)
+              ProdQmin:GetPredictionAfterImmobile(hero, CastQMin)	  
+              ProdQmin:GetPredictionOnImmobile(hero, CastQMin)
            end
        end
 
@@ -161,8 +142,21 @@ end
 
 function OnTick()
 
-	if onHowlingGale == true then CastSpell(_Q) end --interrupter
+	if onHowlingGale == true then
+				if JannaMenu.packets then
+					Packet("S_CAST", {spellId = _Q}):send()
+					if JannaMenu.debugmode then
+                        PrintChat("casted packets nHowlingGale")
+					end
+				else
+					CastSpell(_Q)
+					if JannaMenu.debugmode then
+                        PrintChat("casted normal nHowlingGale")
+					end
+				end
+	end --interrupter
 	
+
 	ts:update()
 	Target = ts.target
 	
@@ -190,28 +184,28 @@ function OnTick()
 		 
 			
             if JannaMenu.AfterDash then
-                ProdQmin:GetPredictionAfterDash(hero, AfterDashFunc)
+                ProdQmin:GetPredictionAfterDash(hero, CastQMin)
             else
-                ProdQmin:GetPredictionAfterDash(hero, AfterDashFunc, false)
+                ProdQmin:GetPredictionAfterDash(hero, CastQMin, false)
             end	
 			
             if JannaMenu.OnDash then
-                ProdQmin:GetPredictionOnDash(hero, OnDashFunc)
+                ProdQmin:GetPredictionOnDash(hero, CastQMin)
             else
-                ProdQmin:GetPredictionOnDash(hero, OnDashFunc, false)
+                ProdQmin:GetPredictionOnDash(hero, CastQMin, false)
             end
             
             if JannaMenu.AfterImmobile then
-                ProdQmin:GetPredictionAfterImmobile(hero, AfterImmobileFunc)
+                ProdQmin:GetPredictionAfterImmobile(hero, CastQMin)
             else
-                ProdQmin:GetPredictionAfterImmobile(hero, AfterImmobileFunc, false)
+                ProdQmin:GetPredictionAfterImmobile(hero, CastQMin, false)
             end
             
             
             if JannaMenu.OnImmobile then
-                ProdQmin:GetPredictionOnImmobile(hero, OnImmobileFunc)
+                ProdQmin:GetPredictionOnImmobile(hero, CastQMin)
             else
-                ProdQmin:GetPredictionOnImmobile(hero, OnImmobileFunc, false)
+                ProdQmin:GetPredictionOnImmobile(hero, CastQMin, false)
             end
             
 
@@ -237,8 +231,17 @@ function OnProcessSpell(unit, spell)
 
              
 if (QREADY) and (GetDistance(unit) < QRangeMin) then    
-
-                CastSpell(_Q, unit.x, unit.z)
+				if JannaMenu.packets then
+                Packet("S_CAST", {spellId = _Q, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+					if JannaMenu.debugmode then
+                        PrintChat("casted packets using interrupter")
+					end
+				else
+				CastSpell(_Q, unit.x, unit.z)
+					if JannaMenu.debugmode then
+                        PrintChat("casted normal using interrupter")
+					end
+				end
 				
 				
 				if JannaMenu.interrupterdebug then PrintChat("Tried to interrupt " .. spell.name) end
@@ -250,7 +253,6 @@ if (QREADY) and (GetDistance(unit) < QRangeMin) then
 	end
 end
 
-				
 -- interrupter end
 
 local function getHitBoxRadius(target)
@@ -264,69 +266,20 @@ end
 
 function CastQMin(unit,pos)
 
-if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then
-			CastSpell(_Q, pos.x, pos.z)
-			if QREADY then CastSpell(_Q) end
-			if JannaMenu.debugmode then
-			PrintChat("casting Q using CastQMin function!")
-			end
-		end
-		
-
-end 
-
-function AfterDashFunc(unit,pos)
-
-if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then
-			CastSpell(_Q, pos.x, pos.z)
-			if QREADY then CastSpell(_Q) end
-			
-			if JannaMenu.debugmode then
-			PrintChat("casting Q using AfterDashFunc function!")
-			end
-		end
-		
-
-end 
-
-function OnDashFunc(unit,pos)
-
-if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then
-			CastSpell(_Q, pos.x, pos.z)
-			if QREADY then CastSpell(_Q) end
-			if JannaMenu.debugmode then
-			PrintChat("casting Q using OnDashFunc function!")
-			end
-		end
-		
-
-end 
-
-function AfterImmobileFunc(unit,pos)
-
-if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then
-			CastSpell(_Q, pos.x, pos.z)
-			if QREADY then CastSpell(_Q) end
-			if JannaMenu.debugmode then
-			PrintChat("casting Q using  AfterImmobileFunc function!")
-			end
-		end
-		
-
-end 
-
-function OnImmobileFunc(unit,pos)
-
-if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then
-			CastSpell(_Q, pos.x, pos.z)
-			if QREADY then CastSpell(_Q) end
-			if JannaMenu.debugmode then
-			PrintChat("casting Q using OnImmobileFunc function!")
-			end
-		end
-		
-
-end 
+	if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then 
+				if JannaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if JannaMenu.debugmode then
+                        PrintChat("casted packets CastQMin")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if JannaMenu.debugmode then
+                        PrintChat("casted normal CastQMin")
+					end
+				end
+	end
+end
 
 
 function OnDraw()
