@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.06"
+local version = "0.07"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -46,6 +46,7 @@ function OnLoad ()
 	JannaMenu:addParam("debugmode","Debug Mode", SCRIPT_PARAM_ONOFF, false)
 	JannaMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
+	JannaMenu:addParam("evadee","Evadee integration", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu:addParam("packets","Use Packets", SCRIPT_PARAM_ONOFF, true)
 	
 	JannaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
@@ -131,8 +132,6 @@ InterruptSpells2 = {
 
 -- end 
 
-print (InterruptSpells)
-print (InterruptSpells2)
 
 
      for i = 1, heroManager.iCount do
@@ -174,7 +173,14 @@ function OnTick()
 		WREADY = (myHero:CanUseSpell(_W) == READY)
 		EREADY = (myHero:CanUseSpell(_E) == READY)
 		RREADY = (myHero:CanUseSpell(_R) == READY)
-
+		
+	if JannaMenu.evadee then
+		if _G.Evadeee_impossibleToEvade and EREADY then
+			CastSpell(_E)
+			PrintChat("Evadee failed tryed to cast shild")
+		end
+	end 
+	
 	if ValidTarget(Target) then
 		ProdQmin:GetPredictionCallBack(Target, GetQPos)
 	else
