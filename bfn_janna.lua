@@ -109,6 +109,8 @@ InterruptSpells = {
 	["Pantheon_GrandSkyfall_Jump"]	= true, -- Panth R
 	["ShenStandUnited"]				= true, -- Shen R
 	["VarusQ"]						= true, -- Varus Q
+	["HideInShadows"]				= true, -- Twitch Q
+		
 }
 
 InterruptSpells2 = {
