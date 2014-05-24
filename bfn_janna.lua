@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.05"
+local version = "0.06"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -28,6 +28,7 @@ end
 
 
 local QRangeMin, QSpeed, QDelay, QWidth = 1075, 980, 0, 200 
+local RRange = 700
 local onHowlingGale = false 
 
 
@@ -56,6 +57,7 @@ function OnLoad ()
 	JannaMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
 	JannaMenu:addParam("showQrange", "Show Q Range", SCRIPT_PARAM_ONOFF, true)
 	
+	
 	JannaMenu:addParam("sep", "~=[ NEEDS RELOAD ]=~", SCRIPT_PARAM_INFO, "")
 	JannaMenu:addParam("ShowQCast", "Show Q Cast", SCRIPT_PARAM_ONOFF, true)
 	if JannaMenu.ShowQCast then
@@ -66,69 +68,69 @@ function OnLoad ()
 	ts.name = "JannaMenu"
     JannaMenu:addTS(ts)
 	
-	
-		-- interrupter start
-	enemyHeroes = nil
-	ToInterrupt = {}
-	InterruptList = {
-		{ charName = "Ahri", spellName = "AhriTumble"}, -- R
-		{ charName = "Ahri", spellName = "AhriSeduce"}, -- E
-		{ charName = "Akali", spellName = "AkaliShadowDance"}, -- R
-		{ charName = "Alistar", spellName = "Headbutt"}, -- W ne o4enj
-		{ charName = "Amumu", spellName = "BandageToss"}, -- Q
-		{ charName = "Braum", spellName = "BraumW"}, -- W
-		{ charName = "Braum", spellName = "BraumRWrapper"}, -- R
-		{ charName = "Blitzcrank", spellName = "RocketGrab"}, -- Q
-		{ charName = "Caitlyn", spellName = "CaitlynAceintheHole"},
-		{ charName = "Diana", spellName = "DianaTeleport"}, -- R
-		{ charName = "Fiora", spellName = "FioraQ"}, -- Q	
-		{ charName = "Fizz", spellName = "FizzPiercingStrike"}, -- Q	
-		{ charName = "FiddleSticks", spellName = "Crowstorm"},
-		{ charName = "FiddleSticks", spellName = "DrainChannel"},
-		{ charName = "Galio", spellName = "GalioIdolOfDurand"},
-		{ charName = "Gragas", spellName = "GragasE"}, -- E
-		{ charName = "Irelia", spellName = "IreliaGatotsu"}, -- Q
-		{ charName = "JarvanIV", spellName = "JarvanIVDemacianStandard"}, -- Q
-		{ charName = "Jax", spellName = "JaxLeapStrike"}, -- Q
-		{ charName = "Khazix", spellName = "KhazixE"}, -- E
-		{ charName = "Leblanc", spellName = "LeblancSlide"}, -- W
-		{ charName = "LeeSin", spellName = "blindmonkqtwo"}, -- Q
-		{ charName = "Nautilus", spellName = "NautilusAnchorDrag"}, -- Q
-		{ charName = "Quinn", spellName = "QuinnE"}, -- E
-		{ charName = "Renekton", spellName = "RenektonSliceAndDice"}, -- E    nur erste e
-		{ charName = "Sejuani", spellName = "SejuaniArcticAssault"}, -- Q
-		{ charName = "Shaco", spellName = "Deceive"}, -- Q
-		{ charName = "Shyvana", spellName = "ShyvanaTransformCast"}, -- R
-		{ charName = "Skarner", spellName = "SkarnerImpale"}, -- R  ult hz otmenjaetsa li
-		{ charName = "Tryndamere", spellName = "slashCast"}, -- E
-		{ charName = "Velkoz", spellName = "VelkozR"}, -- R
-		{ charName = "Vi", spellName = "ViQ"}, -- Q
-		{ charName = "Xerath", spellName = "XerathArcanopulseChargeUp"}, -- Q
-		{ charName = "Xerath", spellName = "XerathLocusOfPower2"}, -- R
-		{ charName = "XinZhao", spellName = "XenZhaoSweep"}, -- E
-		{ charName = "Yasuo", spellName = "YasuoDashWrapper"}, -- E
-		{ charName = "Zac", spellName = "ZacE"}, -- E
-		{ charName = "Leona", spellName = "LeonaZenithBlade"},
-		{ charName = "Karthus", spellName = "FallenOne"},
-		{ charName = "Katarina", spellName = "KatarinaR"},
-		{ charName = "Malzahar", spellName = "AlZaharNetherGrasp"},
-		{ charName = "MissFortune", spellName = "MissFortuneBulletTime"},
-		{ charName = "Nunu", spellName = "AbsoluteZero"},
-		{ charName = "Pantheon", spellName = "Pantheon_GrandSkyfall_Jump"},
-		{ charName = "Shen", spellName = "ShenStandUnited"},
-		{ charName = "Urgot", spellName = "UrgotSwap2"},
-		{ charName = "Varus", spellName = "VarusQ"},
-		{ charName = "Warwick", spellName = "InfiniteDuress"}
-	}
-	enemyHeroes = GetEnemyHeroes()
-		for _, enemy in pairs(enemyHeroes) do
-		for _, champ in pairs(InterruptList) do
-			if enemy.charName == champ.charName then
-				table.insert(ToInterrupt, champ.spellName)
-			end
-		end
-	end
--- interrupter end
+
+
+-- interrupter 2.0 start
+
+InterruptSpells = {
+	["Teleport"]					= true, -- TP not tested
+	["AhriTumble"]					= true, -- Ahri R
+	["AhriSeduce"]					= true, -- Ahri E
+	["AkaliShadowDance"]			= true, -- Akali R
+	["BandageToss"]					= true, -- Amumu Q
+	["BraumW"]						= true, -- Braum w
+	["BraumRWrapper"]				= true, -- Braum R
+	["RocketGrab"]					= true, -- Blitz Q
+	["DianaTeleport"]				= true, -- Diana R
+	["FioraQ"]						= true, -- Fiora Q
+	["FizzPiercingStrike"]			= true, -- Fizz Q
+	["DrainChannel"]				= true, -- Fiddle W
+	["GragasE"]						= true, -- Gragas E
+	["IreliaGatotsu"]				= true, -- Irelia Q
+	["JarvanIVDemacianStandard"]	= true, -- J4 Q
+	["JaxLeapStrike"]				= true, -- Jax Q
+	["KhazixE"]						= true, -- Khazix E
+	["LeblancSlide"]				= true, -- Leblanc W
+	["blindmonkqtwo"]				= true, -- Lee Sin Q2
+	["NautilusAnchorDrag"]			= true, -- Nautilus Q
+	["QuinnE"]						= true, -- Quinn E
+	["RenektonSliceAndDice"]		= true, -- Renek E
+	["SejuaniArcticAssault"]		= true, -- Sejuani Q
+	["Deceive"]						= true, -- Shaco Q
+	["ShyvanaTransformCast"]		= true, -- Shyvana R
+	["SkarnerImpale"]				= true, -- Skarner R
+	["slashCast"]					= true, -- Trynda W
+	["ViQ"]							= true, -- Vi Q
+	["XerathArcanopulseChargeUp"]	= true, -- Xerath Q
+	["XenZhaoSweep"]				= true, -- Xin E
+	["YasuoDashWrapper"]			= true, -- Yasuo E
+	["ZacE"]						= true, -- Zac E
+	["LeonaZenithBlade"]			= true, -- Leona E
+	["Pantheon_GrandSkyfall_Jump"]	= true, -- Panth R
+	["ShenStandUnited"]				= true, -- Shen R
+	["VarusQ"]						= true, -- Varus Q
+}
+
+InterruptSpells2 = {
+
+	["InfiniteDuress"]				= true, -- Warwick R
+	["UrgotSwap2"]					= true, -- Urgot R
+	["AbsoluteZero"]				= true, -- Nunu R
+	["FallenOne"]					= true, -- Kartus R
+	["KatarinaR"]					= true, -- Kata R
+	["AlZaharNetherGrasp"]			= true, -- Malzahar R
+	["MissFortuneBulletTime"]		= true, -- MF R
+	["XerathLocusOfPower2"]			= true, -- Xerath R
+	["VelkozR"]						= true, -- Velkoz R
+	["GalioIdolOfDurand"]			= true, -- Galio R
+	["Crowstorm"]					= true, -- Fiddle R
+	["CaitlynAceintheHole"]			= true, -- Cait R
+}
+
+-- end 
+
+print (InterruptSpells)
+print (InterruptSpells2)
 
 
      for i = 1, heroManager.iCount do
@@ -227,16 +229,12 @@ function OnTick()
     OnImmobilePos = nil	
 
 end 
-
--- interrupter start
+--and InterruptSpells[spell.name] == true
 function OnProcessSpell(unit, spell)
-	if #ToInterrupt > 0 and JannaMenu.interrupter and QREADY then
-		for _, ability in pairs(ToInterrupt) do
-			if spell.name == ability and unit.team ~= myHero.team then
-			
-
-             
-if (QREADY) and (GetDistance(unit) < QRangeMin) then    
+ if JannaMenu.interrupter then
+	if InterruptSpells[spell.name] and unit.team ~= myHero.team  then
+		
+		if (QREADY) and (GetDistance(unit) < QRangeMin) then
 				if JannaMenu.packets then
                 Packet("S_CAST", {spellId = _Q, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
 					if JannaMenu.debugmode then
@@ -254,12 +252,35 @@ if (QREADY) and (GetDistance(unit) < QRangeMin) then
 
    
         end
-			end
+
+		
+	end
+	
+	if InterruptSpells2[spell.name] and unit.team ~= myHero.team  then
+		
+		if (QREADY) and (GetDistance(unit) < QRangeMin) then
+				if JannaMenu.packets then
+                Packet("S_CAST", {spellId = _Q, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+					if JannaMenu.debugmode then
+                        PrintChat("casted packets using interrupter2")
+					end
+				else
+				CastSpell(_Q, unit.x, unit.z)
+					if JannaMenu.debugmode then
+                        PrintChat("casted normal using interrupter2")
+					end
+				end
+				if JannaMenu.interrupterdebug then PrintChat("Tried 2 interrupt " .. spell.name) end
+        end
+		
+		if not (QREADY) and (RREADY) and (GetDistance(unit) < RRange) then
+			CastSpell(_R)
+			if JannaMenu.interrupterdebug then PrintChat("Tried 2 interrupt with R: " .. spell.name) end
 		end
+		
 	end
 end
-
--- interrupter end
+end
 
 local function getHitBoxRadius(target)
 		return GetDistance(target, target.minBBox)
