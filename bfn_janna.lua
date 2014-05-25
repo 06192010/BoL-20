@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.06"
+local version = "0.07"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -29,6 +29,7 @@ end
 
 local QRangeMin, QSpeed, QDelay, QWidth = 1075, 980, 0, 200 
 local RRange = 700
+local WRange = 600
 local onHowlingGale = false 
 
 
@@ -42,6 +43,7 @@ function OnLoad ()
 	-- menu
 	JannaMenu = scriptConfig("Janna Helper", "Janna Helper")
 	
+	JannaMenu:addParam("sbtw","SBTW", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	JannaMenu:addParam("testq","Cast Q", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("A"))
 	JannaMenu:addParam("debugmode","Debug Mode", SCRIPT_PARAM_ONOFF, false)
 	JannaMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
@@ -56,6 +58,7 @@ function OnLoad ()
 	
 	JannaMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
 	JannaMenu:addParam("showQrange", "Show Q Range", SCRIPT_PARAM_ONOFF, true)
+	JannaMenu:addParam("showWrange", "Show W Range", SCRIPT_PARAM_ONOFF, true)
 	
 	
 	JannaMenu:addParam("sep", "~=[ NEEDS RELOAD ]=~", SCRIPT_PARAM_INFO, "")
@@ -110,6 +113,11 @@ InterruptSpells = {
 	["ShenStandUnited"]				= true, -- Shen R
 	["VarusQ"]						= true, -- Varus Q
 	["HideInShadows"]				= true, -- Twitch Q
+	["PantheonW"]					= true, -- Pantheon W
+	["CarpetBomb"]					= true, -- Corki W ?
+	["LucianR"]						= true, -- Lucian R
+	
+	 
 		
 }
 
@@ -184,6 +192,11 @@ function OnTick()
 		if JannaMenu.testq then
 		if ValidTarget(Target) then
 			ProdQmin:GetPredictionCallBack(Target, CastQMin)
+		end
+	end	
+	if JannaMenu.sbtw then
+		if ValidTarget(Target) then
+			ProdQmin:GetPredictionCallBack(Target, sbtw)
 		end
 	end		
 
@@ -310,12 +323,47 @@ function CastQMin(unit,pos)
 	end
 end
 
+function sbtw(unit,pos)
+	if QREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeMin) then 
+				if JannaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if JannaMenu.debugmode then
+                        PrintChat("casted q packets sbtw")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if JannaMenu.debugmode then
+                        PrintChat("casted q normal sbtw")
+					end
+				end
+	end
+	if WREADY and (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then 
+--					if JannaMenu.packets then
+--					Packet("S_CAST", {spellId = _W, x = Target, y = Target}):send()
+--					if JannaMenu.debugmode then
+--                       PrintChat("casted packets W sbtw")
+--					end
+--				else
+					CastSpell(_W, Target)
+					if JannaMenu.debugmode then
+                        PrintChat("casted normal W sbtw")
+					end
+	end
+end 
+
+
 
 function OnDraw()
-
-	if JannaMenu.showQrange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRangeMin, 0xb9c3ed)
-	end	
+	if QREADY then 
+		if JannaMenu.showQrange and not myHero.dead then
+			DrawCircle(myHero.x, myHero.y, myHero.z, QRangeMin, 0xb9c3ed)
+		end	
+	end
+	if WREADY then 
+		if JannaMenu.showWrange and not myHero.dead then
+			DrawCircle(myHero.x, myHero.y, myHero.z, WRange, 0xb9c3ed)
+		end
+	end
 	
 
 end 
