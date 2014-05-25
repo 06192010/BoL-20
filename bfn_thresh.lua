@@ -1,5 +1,6 @@
-local version = "0.2"
-local TESTVERSION = false
+if myHero.charName ~= "Thresh" then return end
+
+local version = "0.3"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_thresh.lua".."?rand="..math.random(1,10000)
@@ -26,14 +27,13 @@ end
 end
 
 
-if myHero.charName ~= "Thresh" then return end
-
-
 local function getHitBoxRadius(target)
         return GetDistance(target, target.minBBox)
 end
 
 local QREADY = false
+local WREADY = false
+local EREADY = false
 local RREADY = false
 -- 1075 1200, 0.500, 70
 local QRange, QSpeed, QDelay, QWidth, QRangeCut = 1075, 1900, 0.500, 80, 1000
@@ -59,6 +59,10 @@ function OnLoad()
 	
  --   ThreshMenu:addParam("fight","combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
     ThreshMenu:addParam("Combo","Throw Q", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("Y"))
+	ThreshMenu:addParam("interrupter","Interrupter", SCRIPT_PARAM_ONOFF, true)
+	ThreshMenu:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
+	ThreshMenu:addParam("packets","Use Packets", SCRIPT_PARAM_ONOFF, true)
+	ThreshMenu:addParam("debugmode","Debug Mode", SCRIPT_PARAM_ONOFF, false)
 	
 	ThreshMenu:addParam("info", "~=[ Ult Settings ]=~", SCRIPT_PARAM_INFO, "")	
 	ThreshMenu:addParam("useult","Use Auto Ult", SCRIPT_PARAM_ONOFF, true)
@@ -72,14 +76,100 @@ function OnLoad()
 	
 	ThreshMenu:addParam("info", "~=[ DRAWS ]=~", SCRIPT_PARAM_INFO, "")
 	ThreshMenu:addParam("showQrange", "Show Q Range", SCRIPT_PARAM_ONOFF, false)
-	ThreshMenu:addParam("showQcollision", "Show Q Collision", SCRIPT_PARAM_ONOFF, false)
+	ThreshMenu:addParam("showQcollision", "Show Q Collision", SCRIPT_PARAM_ONOFF, true)
 	ThreshMenu:addParam("showWrange", "Show W Range", SCRIPT_PARAM_ONOFF, false)
-	ThreshMenu:addParam("showErange", "Show E Range", SCRIPT_PARAM_ONOFF, false)
+	ThreshMenu:addParam("showErange", "Show E Range", SCRIPT_PARAM_ONOFF, true)
 	ThreshMenu:addParam("showRrange", "Show R Range", SCRIPT_PARAM_ONOFF, false)
 
     -- Vars
     ts = TargetSelector(TARGET_LESS_CAST, 1400, true)
     
+	
+	-- interrupter 2.0 start
+
+InterruptSpells = {
+
+	["AhriTumble"]					= true, -- Ahri R
+	["AhriSeduce"]					= true, -- Ahri E
+	["AkaliShadowDance"]			= true, -- Akali R
+	["BandageToss"]					= true, -- Amumu Q
+	["BraumW"]						= true, -- Braum w
+	["BraumRWrapper"]				= true, -- Braum R
+	["RocketGrab"]					= true, -- Blitz Q
+	["DianaTeleport"]				= true, -- Diana R
+	["FioraQ"]						= true, -- Fiora Q
+	["FizzPiercingStrike"]			= true, -- Fizz Q
+	["DrainChannel"]				= true, -- Fiddle W
+	["GragasE"]						= true, -- Gragas E
+	["IreliaGatotsu"]				= true, -- Irelia Q
+	["JarvanIVDemacianStandard"]	= true, -- J4 Q
+	["JaxLeapStrike"]				= true, -- Jax Q
+	["KhazixE"]						= true, -- Khazix E
+	["LeblancSlide"]				= true, -- Leblanc W
+	["blindmonkqtwo"]				= true, -- Lee Sin Q2
+	["NautilusAnchorDrag"]			= true, -- Nautilus Q
+	["QuinnE"]						= true, -- Quinn E
+	["RenektonSliceAndDice"]		= true, -- Renek E
+	["SejuaniArcticAssault"]		= true, -- Sejuani Q
+	["Deceive"]						= true, -- Shaco Q
+	["ShyvanaTransformCast"]		= true, -- Shyvana R
+	["SkarnerImpale"]				= true, -- Skarner R
+	["slashCast"]					= true, -- Trynda W
+	["ViQ"]							= true, -- Vi Q
+	["XerathArcanopulseChargeUp"]	= true, -- Xerath Q
+	["XenZhaoSweep"]				= true, -- Xin E
+	["YasuoDashWrapper"]			= true, -- Yasuo E
+	["ZacE"]						= true, -- Zac E
+	["LeonaZenithBlade"]			= true, -- Leona E
+	["Pantheon_GrandSkyfall_Jump"]	= true, -- Panth R
+	["ShenStandUnited"]				= true, -- Shen R
+	["VarusQ"]						= true, -- Varus Q
+	["HideInShadows"]				= true, -- Twitch Q
+	["PantheonW"]					= true, -- Pantheon W
+	["CarpetBomb"]					= true, -- Corki W ?
+	["LucianR"]						= true, -- Lucian R
+	
+	
+	["InfiniteDuress"]				= true, -- Warwick R
+	["UrgotSwap2"]					= true, -- Urgot R
+	["AbsoluteZero"]				= true, -- Nunu R
+	["FallenOne"]					= true, -- Kartus R
+	["KatarinaR"]					= true, -- Kata R
+	["AlZaharNetherGrasp"]			= true, -- Malzahar R
+	["MissFortuneBulletTime"]		= true, -- MF R
+	["XerathLocusOfPower2"]			= true, -- Xerath R
+	["VelkozR"]						= true, -- Velkoz R
+	["GalioIdolOfDurand"]			= true, -- Galio R
+	["Crowstorm"]					= true, -- Fiddle R
+	["CaitlynAceintheHole"]			= true, -- Cait R
+	 
+		
+}
+
+--[[
+InterruptSpells2 = {
+
+	["InfiniteDuress"]				= true, -- Warwick R
+	["UrgotSwap2"]					= true, -- Urgot R
+	["AbsoluteZero"]				= true, -- Nunu R
+	["FallenOne"]					= true, -- Kartus R
+	["KatarinaR"]					= true, -- Kata R
+	["AlZaharNetherGrasp"]			= true, -- Malzahar R
+	["MissFortuneBulletTime"]		= true, -- MF R
+	["XerathLocusOfPower2"]			= true, -- Xerath R
+	["VelkozR"]						= true, -- Velkoz R
+	["GalioIdolOfDurand"]			= true, -- Galio R
+	["Crowstorm"]					= true, -- Fiddle R
+	["CaitlynAceintheHole"]			= true, -- Cait R
+	["Teleport"]					= true, -- TP not tested
+	["SummonerFlash"]				= true, -- Flash
+}
+
+]]--
+
+-- end 
+
+
      for i = 1, heroManager.iCount do
            local hero = heroManager:GetHero(i)
            if hero.team ~= myHero.team then
@@ -92,11 +182,82 @@ function OnLoad()
            PrintChat("<font color='#c9d7ff'> BIG FAT NIDALEE Thresh Helper </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded! </font>")
 end
 
+function OnProcessSpell(unit, spell)
+ if ThreshMenu.interrupter then
+	if InterruptSpells[spell.name] and unit.team ~= myHero.team  then
+		
+		if (EREADY) and (GetDistance(unit) < ERange) then
+				if ThreshMenu.packets then
+                Packet("S_CAST", {spellId = _E, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+					if ThreshMenu.debugmode then
+                        PrintChat("casted packets using interrupter")
+					end
+				else
+				CastSpell(_E, unit.x, unit.z)
+					if ThreshMenu.debugmode then
+                        PrintChat("casted normal using interrupter")
+					end
+				end
+
+				if ThreshMenu.interrupterdebug then PrintChat("I try to interrupt " .. spell.name) end
+
+   
+        end
+
+		
+	end
+--[[
+	if InterruptSpells2[spell.name] and unit.team ~= myHero.team  then
+		
+		if (EREADY) and (GetDistance(unit) < ERange) then
+				if ThreshMenu.packets then
+                Packet("S_CAST", {spellId = _E, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+					if ThreshMenu.debugmode then
+                        PrintChat("casted packets using interrupter2")
+					end
+				else
+				CastSpell(_E, unit.x, unit.z)
+					if ThreshMenu.debugmode then
+                        PrintChat("casted normal using interrupter2")
+					end
+				end
+
+				if ThreshMenu.interrupterdebug then PrintChat("Tried to interrupt " .. spell.name) end
+        end
+		
+		if not (EREADY) and (QREADY) and (GetDistance(unit) < QRangeCut) then
+			local coll = Collision(QRange, QSpeed, QDelay, QWidth)
+				if not coll:GetMinionCollision(unit, myHero) then
+					if ThreshMenu.packets then
+						Packet("S_CAST", {spellId = _Q, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+						if ThreshMenu.debugmode then
+							PrintChat("casted packets using interrupter2")
+						end
+					else
+						CastSpell(_Q, unit.x, unit.z)
+						if ThreshMenu.debugmode then
+							PrintChat("casted normal using interrupter2")
+						end
+					end
+				end
+			
+			if ThreshMenu.interrupterdebug then PrintChat("Tried 2 interrupt with Q: " .. spell.name) end
+		end
+		
+	end
+	
+]]--
+end
+end
+
+
 function OnTick()
     ts:update()
     Target = ts.target
 		
 		QREADY = (myHero:CanUseSpell(_Q) == READY)		
+		WREADY = (myHero:CanUseSpell(_W) == READY)		
+		EREADY = (myHero:CanUseSpell(_E) == READY)		
 		RREADY = (myHero:CanUseSpell(_R) == READY)
 		
 		UltEnemys()
@@ -229,27 +390,31 @@ function OnImmobileQFunc(unit, pos, spell)
 end
 
 function OnDraw()
-
+if QREADY then 
 	if Target and ThreshMenu.showQcollision and not myHero.dead then
 	QCol:DrawCollision(myHero, Target)
 	end	
-	
+end
+if QREADY then 
 	if ThreshMenu.showQrange and not myHero.dead then
 		DrawCircle(myHero.x, myHero.y, myHero.z, QRangeCut, 0xb9c3ed)
 	end	
-	
+end
+if WREADY then 
 	if ThreshMenu.showWrange and not myHero.dead then
 		DrawCircle(myHero.x, myHero.y, myHero.z, WRange, 0x98a2cb)
 	end	
-	
+end
+if EREADY then 
 	if ThreshMenu.showErange and not myHero.dead then
 		DrawCircle(myHero.x, myHero.y, myHero.z, ERangeCut, 0x747ea4)
 	end	
-	
+end
+if RREADY then 
 	if ThreshMenu.showRrange and not myHero.dead then
 		DrawCircle(myHero.x, myHero.y, myHero.z, RRange, 0xFFFFFF)
 	end
-		   
+end	   
 
 end
 
