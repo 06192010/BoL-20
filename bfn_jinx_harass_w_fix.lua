@@ -1,5 +1,5 @@
 if myHero.charName ~= "Jinx" then return end
-local version = "0.001"
+local version = "0.002"
 
 local AUTOUPDATE = true
 
@@ -122,7 +122,7 @@ function OnTick()
 	local hero = heroManager:GetHero(i)
 		if hero.team ~= myHero.team then
 
-			if KarmaMenu.OnImmobile then
+			if JinxHarassMenu.OnImmobile then
 				ProdW:GetPredictionOnImmobile(hero, OnImmobileFunc)
 			else
 				ProdW:GetPredictionOnImmobile(hero, OnImmobileFunc, false)
