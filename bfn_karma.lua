@@ -1,6 +1,6 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.012"
-local TESTVERSION = false
+local version = "0.013"
+
 
 local AUTOUPDATE = true
 
@@ -61,7 +61,9 @@ Shieldz = {
 	KarmaMenu:addParam("castq","RQ Cast", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("X"))
 	KarmaMenu:addParam("castrq","RQ/Q Cast ", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	KarmaMenu:addParam("spamrq","RQ/Q Spam Toggle ", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("Y"))
+	KarmaMenu:addParam("manaslider", "ManaSlider RQ/Q Spam",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 	KarmaMenu:addParam("castw","Auto W", SCRIPT_PARAM_ONOFF, true)
+	KarmaMenu:addParam("packets","Use Packets", SCRIPT_PARAM_ONOFF, true)
 	KarmaMenu:addParam("gtfo", "GTFO - casts RE ASAP!", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("A"))
 	KarmaMenu:addParam("evade","Evadee fails dodge cast E", SCRIPT_PARAM_ONOFF, true)
 
@@ -146,7 +148,7 @@ function OnTick()
 	end
 	if KarmaMenu.spamrq then
 		if ValidTarget(Target) then
-			ProdQ:GetPredictionCallBack(Target, CastRQ)
+			ProdQ:GetPredictionCallBack(Target, CastRQSpam)
 		end
 	end
 	
@@ -216,13 +218,44 @@ function CastRQ(unit,pos)
 			if RReady then
 			CastSpell(_R)
 			end 
-			CastSpell(_Q, pos.x, pos.z)
-			if KarmaMenu.debugmode then
-			PrintChat("casting RQ spam using CastRQ function!")
-			end
+				if KarmaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if KarmaMenu.debugmode then
+                        PrintChat("casted packets CastQMin")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if KarmaMenu.debugmode then
+                        PrintChat("casted normal CastQMin")
+					end
+				end
 		end
 	end
 end
+
+function CastRQSpam(unit,pos)
+	if (QReady) and not mynamaislowerthen(KarmaMenu.manaslider) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRangeCut) then
+		local coll = Collision(QRange, QSpeed, QDelay, QWidth)
+		if not coll:GetMinionCollision(pos, myHero) then
+			if RReady then
+			CastSpell(_R)
+			end 
+				if KarmaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if KarmaMenu.debugmode then
+                        PrintChat("casted packets CastQMin")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if KarmaMenu.debugmode then
+                        PrintChat("casted normal CastQMin")
+					end
+				end
+		end
+	end
+end
+
+
 
 
 function CastQ(unit,pos)
@@ -230,7 +263,17 @@ function CastQ(unit,pos)
 		local coll = Collision(QRange, QSpeed, QDelay, QWidth)
 		if not coll:GetMinionCollision(pos, myHero) then
 			CastSpell(_R) 
-			CastSpell(_Q, pos.x, pos.z)
+				if KarmaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if KarmaMenu.debugmode then
+                        PrintChat("casted packets CastQMin")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if KarmaMenu.debugmode then
+                        PrintChat("casted normal CastQMin")
+					end
+				end
 			if KarmaMenu.debugmode then
 			PrintChat("casting RQ combo using RQ Cast!")
 			end
@@ -246,8 +289,27 @@ function OnImmobileFunc(unit,pos)
 			if RReady then
 			CastSpell(_R)
 			end
-			CastSpell(_Q, pos.x, pos.z)
+							if KarmaMenu.packets then
+					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+					if KarmaMenu.debugmode then
+                        PrintChat("casted packets CastQMin")
+					end
+				else
+					CastSpell(_Q, pos.x, pos.z)
+					if KarmaMenu.debugmode then
+                        PrintChat("casted normal CastQMin")
+					end
+				end
 end
 
 end 
+end
+
+
+function mynamaislowerthen(percent)
+    if myHero.mana < (myHero.maxMana * ( percent / 100)) then
+        return true
+    else
+        return false
+    end
 end
