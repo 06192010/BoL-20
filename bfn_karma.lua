@@ -1,5 +1,5 @@
 if myHero.charName ~= "Karma" then return end
-local version = "0.013"
+local version = "0.014"
 
 
 local AUTOUPDATE = true
@@ -58,7 +58,7 @@ Shieldz = {
 	ts.name = "KarmaMenu"
     KarmaMenu:addTS(ts)
 	
-	KarmaMenu:addParam("castq","RQ Cast", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("X"))
+--	KarmaMenu:addParam("castq","RQ Cast", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("X"))
 	KarmaMenu:addParam("castrq","RQ/Q Cast ", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	KarmaMenu:addParam("spamrq","RQ/Q Spam Toggle ", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("Y"))
 	KarmaMenu:addParam("manaslider", "ManaSlider RQ/Q Spam",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
@@ -68,24 +68,21 @@ Shieldz = {
 	KarmaMenu:addParam("evade","Evadee fails dodge cast E", SCRIPT_PARAM_ONOFF, true)
 
 	KarmaMenu:addParam("info", "~=[ USE CALLBACKS ]=~", SCRIPT_PARAM_INFO, "")
-
 	KarmaMenu:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, true)
 
-	
 	KarmaMenu:addParam("info", "~=[ Draws ]=~", SCRIPT_PARAM_INFO, "")
 	KarmaMenu:addParam("showQrange","Draw Script Q Range", SCRIPT_PARAM_ONOFF, false)
 	KarmaMenu:addParam("showWrange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
-	KarmaMenu:addParam("showQcollision","Draw Q Collision", SCRIPT_PARAM_ONOFF, false)
-	
+	KarmaMenu:addParam("showQcollision","Draw Q Collision", SCRIPT_PARAM_ONOFF, true)
 	
 	KarmaMenu:addParam("info", "~=[ SETTINGS ]=~", SCRIPT_PARAM_INFO, "")
 	KarmaMenu:addParam("debugmode","debug mode", SCRIPT_PARAM_ONOFF, false)
 	
 	KarmaMenu:addParam("sep", "~=[ NEEDS RELOAD ]=~", SCRIPT_PARAM_INFO, "")
-	KarmaMenu:addParam("ShowRQCast", "Show RQ Cast", SCRIPT_PARAM_ONOFF, true)
-	if KarmaMenu.ShowRQCast then
-	KarmaMenu:permaShow("castq")	
-	end
+--	KarmaMenu:addParam("ShowRQCast", "Show RQ Cast", SCRIPT_PARAM_ONOFF, true)
+--	if KarmaMenu.ShowRQCast then
+--	KarmaMenu:permaShow("castq")	
+--	end
 	KarmaMenu:addParam("ShowRQCast", "Show RQ Cast", SCRIPT_PARAM_ONOFF, true)
 	if KarmaMenu.ShowRQCast then
 	KarmaMenu:permaShow("castrq")	
@@ -94,11 +91,10 @@ Shieldz = {
 	if KarmaMenu.ShowRQSpam then
 	KarmaMenu:permaShow("spamrq")	
 	end
-	KarmaMenu:addParam("Showautow", "Show Auto W", SCRIPT_PARAM_ONOFF, true)
+	KarmaMenu:addParam("Showautow", "Show Auto W", SCRIPT_PARAM_ONOFF, false)
 	if KarmaMenu.Showautow then
 	KarmaMenu:permaShow("castw")
 	end
-	
 	KarmaMenu:addParam("showgtfo", "Show GTFO", SCRIPT_PARAM_ONOFF, true)
 	if KarmaMenu.showgtfo then
 	KarmaMenu:permaShow("gtfo")	
@@ -135,11 +131,11 @@ function OnTick()
 	qPos = nil
 	end
 	
-	if KarmaMenu.castq then
-		if ValidTarget(Target) then
-			ProdQ:GetPredictionCallBack(Target, CastQ)
-		end
-	end	
+--	if KarmaMenu.castq then
+--		if ValidTarget(Target) then
+--			ProdQ:GetPredictionCallBack(Target, CastQ)
+--		end
+--	end	
 	
 	if KarmaMenu.castrq then
 		if ValidTarget(Target) then
@@ -160,6 +156,9 @@ if KarmaMenu.gtfo then
 if myHero:CanUseSpell(_R) == READY and myHero:CanUseSpell(_E) == READY then
 		CastSpell(_R)
 		CastSpell(_E, myHero)
+		if KarmaMenu.debugmode then
+           PrintChat("casted using GTFO")
+		end
 end
 end
 
@@ -221,12 +220,12 @@ function CastRQ(unit,pos)
 				if KarmaMenu.packets then
 					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
 					if KarmaMenu.debugmode then
-                        PrintChat("casted packets CastQMin")
+                        PrintChat("casted packets CastRQ")
 					end
 				else
 					CastSpell(_Q, pos.x, pos.z)
 					if KarmaMenu.debugmode then
-                        PrintChat("casted normal CastQMin")
+                        PrintChat("casted normal CastRQ")
 					end
 				end
 		end
@@ -243,12 +242,12 @@ function CastRQSpam(unit,pos)
 				if KarmaMenu.packets then
 					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
 					if KarmaMenu.debugmode then
-                        PrintChat("casted packets CastQMin")
+                        PrintChat("casted packets CastRQSpam")
 					end
 				else
 					CastSpell(_Q, pos.x, pos.z)
 					if KarmaMenu.debugmode then
-                        PrintChat("casted normal CastQMin")
+                        PrintChat("casted normal CastRQSpam")
 					end
 				end
 		end
@@ -266,16 +265,16 @@ function CastQ(unit,pos)
 				if KarmaMenu.packets then
 					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
 					if KarmaMenu.debugmode then
-                        PrintChat("casted packets CastQMin")
+                        PrintChat("casted packets CastQ")
 					end
 				else
 					CastSpell(_Q, pos.x, pos.z)
 					if KarmaMenu.debugmode then
-                        PrintChat("casted normal CastQMin")
+                        PrintChat("casted normal CastQ")
 					end
 				end
 			if KarmaMenu.debugmode then
-			PrintChat("casting RQ combo using RQ Cast!")
+			PrintChat("casting RQ combo using CastQ!")
 			end
 		end
 	end
@@ -292,12 +291,12 @@ function OnImmobileFunc(unit,pos)
 							if KarmaMenu.packets then
 					Packet("S_CAST", {spellId = _Q, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
 					if KarmaMenu.debugmode then
-                        PrintChat("casted packets CastQMin")
+                        PrintChat("casted packets OnImmobileFunc")
 					end
 				else
 					CastSpell(_Q, pos.x, pos.z)
 					if KarmaMenu.debugmode then
-                        PrintChat("casted normal CastQMin")
+                        PrintChat("casted normal OnImmobileFunc")
 					end
 				end
 end
