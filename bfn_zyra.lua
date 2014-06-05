@@ -2,7 +2,7 @@ if myHero.charName ~= "Zyra" then return end
 
 local version = "0.03"
 
-local AUTOUPDATE = false
+local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_zyra.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH.."bfn_zyra.lua"
