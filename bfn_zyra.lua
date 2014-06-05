@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.04"
+local version = "0.05"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -31,9 +31,9 @@ end
 
 local QReady, WReady, EReady, RReady = false, false, false, false
 
-local QRange, QSpeed, QDelay, QWidth = 800, math.huge, 0.7, 85
+local QRange, QSpeed, QDelay, QWidth = 800, 1430, 0.25, 85
 local WRange, WSpeed, WDelay, WWidth = 825, math.huge, 0.2432, 10
-local ERange, ESpeed, EDelay, EWidth = 1050, 1150, 0.16, 70
+local ERange, ESpeed, EDelay, EWidth = 1050, 1040, 0.24, 70
 local RRange, RSpeed, RDelay, RRadius = 700, math.huge, 0.500, 500
 local PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60
 
