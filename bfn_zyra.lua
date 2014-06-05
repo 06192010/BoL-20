@@ -187,7 +187,7 @@ InterruptSpells2 = {
 
 -- end 
 
-	PrintChat("<font color='#c9d7ff'> BFN Zyra </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded! </font>")
+	PrintChat("<font color='#c9d7ff'> BFN Zyra </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
 
 end
 
@@ -223,9 +223,9 @@ end
 
 function OnProcessSpell(unit, spell)
 
---if unit.isMe and spell.name == "ZyraSeed" then
---CastSpell(_W, spell.endPos.x, spell.endPos.z)
---end
+if unit.isMe and spell.name == "ZyraSeed" then
+CastSpell(_W, spell.endPos.x, spell.endPos.z)
+end
 if unit.isMe and spell.name == "ZyraQFissure" then
 CastSpell(_W, spell.endPos.x, spell.endPos.z)
 end
