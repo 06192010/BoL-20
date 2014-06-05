@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.03"
+local version = "0.04"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -37,7 +37,6 @@ local ERange, ESpeed, EDelay, EWidth = 1050, 1150, 0.16, 70
 local RRange, RSpeed, RDelay, RRadius = 700, math.huge, 0.500, 500
 local PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60
 
-local Zyra2SeedQ, Zyra2SeedE = false, false
 
 
 
@@ -60,10 +59,10 @@ function OnLoad()
 	ZyraMenu:addSubMenu("[Harass]", "Harass")
 	ZyraMenu.Harass:addParam("info", "~=[ Harass 1 OnKey ]=~", SCRIPT_PARAM_INFO, "")
     ZyraMenu.Harass:addParam("Harass1Mode","Harass Q Mode", SCRIPT_PARAM_LIST, 1, { "Only if W Ready", "Dont wait for W" })
-	ZyraMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 30, 0, 100, 0)
+	ZyraMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 20, 0, 100, 0)
 	ZyraMenu.Harass:addParam("info", "~=[ Harass 2 OnToggle ]=~", SCRIPT_PARAM_INFO, "")
     ZyraMenu.Harass:addParam("Harass2Mode","Harass Q Mode", SCRIPT_PARAM_LIST, 1, { "Only if W Ready", "Dont wait for W" })
-	ZyraMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 30, 0, 100, 0)
+	ZyraMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 20, 0, 100, 0)
 	
 	ZyraMenu:addSubMenu("[Ultimate]", "Ultimate")
 	ZyraMenu.Ultimate:addParam("UseAutoUlt","Use Auto Ult", SCRIPT_PARAM_ONOFF, true)
@@ -80,8 +79,8 @@ function OnLoad()
 	
 	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
 	ZyraMenu.KSOptions:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with E", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, false)
+	ZyraMenu.KSOptions:addParam("KSwithQ","KS with E", SCRIPT_PARAM_ONOFF, false)
 	ZyraMenu.KSOptions:addParam("KSwithQ","KS with R", SCRIPT_PARAM_ONOFF, false)
 --	ZyraMenu.KSOptions:addParam("KSwithPassive","KS with Passive", SCRIPT_PARAM_ONOFF, true)	
 	
@@ -105,7 +104,7 @@ function OnLoad()
 --	ZyraMenu.Draws:addParam("DrawPassiveRange","Draw Passive Range", SCRIPT_PARAM_ONOFF, false)
 	ZyraMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, true)
 	ZyraMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.Draws:addParam("DrawERange","Draw E Range", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.Draws:addParam("DrawERange","Draw E Range", SCRIPT_PARAM_ONOFF, false)
 	ZyraMenu.Draws:addParam("DrawRRange","Draw R Range", SCRIPT_PARAM_ONOFF, false)
 	
 	if ZyraMenu.ShowinGame.Combo then
@@ -223,6 +222,17 @@ function OnTick()
 end
 
 function OnProcessSpell(unit, spell)
+
+if unit.isMe and spell.name == "ZyraSeed" then
+CastSpell(_W, spell.endPos.x, spell.endPos.z)
+end
+if unit.isMe and spell.name == "ZyraQFissure" then
+CastSpell(_W, spell.endPos.x, spell.endPos.z)
+end
+if unit.isMe and spell.name == "ZyraGraspingRoots" then
+CastSpell(_W, spell.endPos.x, spell.endPos.z)
+end
+
  if ZyraMenu.Interrupter.useinterrupter then
 	if InterruptSpells[spell.name] and unit.team ~= myHero.team  then
 		
