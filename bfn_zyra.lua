@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.05"
+local version = "0.06"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -223,15 +223,15 @@ end
 
 function OnProcessSpell(unit, spell)
 
-if unit.isMe and spell.name == "ZyraSeed" then
-CastSpell(_W, spell.endPos.x, spell.endPos.z)
-end
+--if unit.isMe and spell.name == "ZyraSeed" then
+--CastSpell(_W, spell.endPos.x, spell.endPos.z)
+--end
 if unit.isMe and spell.name == "ZyraQFissure" then
 CastSpell(_W, spell.endPos.x, spell.endPos.z)
 end
-if unit.isMe and spell.name == "ZyraGraspingRoots" then
-CastSpell(_W, spell.endPos.x, spell.endPos.z)
-end
+--if unit.isMe and spell.name == "ZyraGraspingRoots" then
+--CastSpell(_W, spell.endPos.x, spell.endPos.z)
+--end
 
  if ZyraMenu.Interrupter.useinterrupter then
 	if InterruptSpells[spell.name] and unit.team ~= myHero.team  then
