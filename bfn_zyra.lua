@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.10"
+local version = "0.11"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -273,12 +273,12 @@ function OnTick()
 	end
 
 	-- Harass
-	if ZyraMenu.Hotkeys.Harass1 then
+	if ZyraMenu.Hotkeys.Harass1 and not ZyraMenu.Hotkeys.Combo then
 	if ValidTarget(Target) then
 	ProdQ:GetPredictionCallBack(Target, Harass1)
 	end
 	end
-	if ZyraMenu.Hotkeys.Harass2 then
+	if ZyraMenu.Hotkeys.Harass2 and not ZyraMenu.Hotkeys.Combo then
 	if ValidTarget(Target) then
 	ProdQ:GetPredictionCallBack(Target, Harass2)
 	end
@@ -510,7 +510,8 @@ function Harass1(unit,pos)
 					end
 
 		end 
-	elseif ZyraMenu.Harass.Harass1Mode == 2 then
+	end
+	if ZyraMenu.Harass.Harass1Mode == 2 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 			
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -530,8 +531,8 @@ function Harass1(unit,pos)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
-
-		elseif QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+		end
+		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 				
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -569,7 +570,8 @@ function Harass2(unit,pos)
 					end
 
 		end 
-	elseif ZyraMenu.Harass.Harass2Mode == 2 then
+	end
+	if ZyraMenu.Harass.Harass2Mode == 2 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 			
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -589,8 +591,8 @@ function Harass2(unit,pos)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
-
-		elseif QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+		end
+		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 				
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
