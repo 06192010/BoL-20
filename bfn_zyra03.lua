@@ -27,6 +27,8 @@ AutoupdaterMsg("Error downloading version info")
 end
 end
 
+
+
 local QReady, WReady, EReady, RReady = false, false, false, false
 
 local QRange, QSpeed, QDelay, QWidth = 800, 1430, 0.25, 85
@@ -198,10 +200,10 @@ InterruptSpells2 = {
 			local hero = heroManager:GetHero(i)
 			if hero.team ~= myHero.team then
 
-				ProdE:GetPredictionAfterDash(hero, AfterDash)
-				ProdE:GetPredictionOnDash(hero, OnDash)
-				ProdQ:GetPredictionAfterImmobile(hero, AfterImmobile)
-				ProdQ:GetPredictionOnImmobile(hero, OnImmobile)
+				ProdE:GetPredictionAfterDash(hero, AfterDashFunc)
+				ProdE:GetPredictionOnDash(hero, OnDashFunc)
+				ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc)
+				ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
 			end
 	end
 	
@@ -269,24 +271,24 @@ function OnTick()
 	if hero.team ~= myHero.team then
 
 		if ZyraMenu.ProdictionSettings.AfterDash then
-			ProdE:GetPredictionAfterDash(hero, AfterDash)
+			ProdE:GetPredictionAfterDash(hero, AfterDashFunc)
 		else
-			ProdE:GetPredictionAfterDash(hero, AfterDash, false)
+			ProdE:GetPredictionAfterDash(hero, AfterDashFunc, false)
 		end
 		if ZyraMenu.ProdictionSettings.OnDash then
-			ProdE:GetPredictionOnDash(hero, OnDash)
+			ProdE:GetPredictionOnDash(hero, OnDashFunc)
 		else
-			ProdE:GetPredictionOnImmobile(hero, OnDash, false)
+			ProdE:GetPredictionOnImmobile(hero, OnDashFunc, false)
 		end
 		if ZyraMenu.ProdictionSettings.AfterImmobile then
-			ProdQ:GetPredictionAfterImmobile(hero, AfterImmobile)
+			ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc)
 		else
-			ProdQ:GetPredictionAfterImmobile(hero, AfterImmobile, false)
+			ProdQ:GetPredictionAfterImmobile(hero, AfterImmobileFunc, false)
 		end
 		if ZyraMenu.ProdictionSettings.OnImmobile then
-			ProdQ:GetPredictionOnImmobile(hero, OnImmobile)
+			ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc)
 		else
-			ProdQ:GetPredictionOnImmobile(hero, OnImmobile, false)
+			ProdQ:GetPredictionOnImmobile(hero, OnImmobileFunc, false)
 		end
 		
 	end
@@ -562,7 +564,7 @@ function Harass2(unit,pos)
 	end 
 end
 -- Callbacks
-function AfterDash (unit,pos)
+function AfterDashFunc (unit,pos)
 	if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
 	
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -575,7 +577,7 @@ end
 
 end 
 
-function OnDash (unit,pos)
+function OnDashFunc (unit,pos)
 	if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
 	
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -588,7 +590,7 @@ function OnDash (unit,pos)
 
 end 
 
-function AfterImmobile (unit,pos)
+function AfterImmobileFunc (unit,pos)
 	if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 	
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -614,7 +616,7 @@ end
 end 
 
 
-function OnImmobile (unit,pos)
+function OnImmobileFunc (unit,pos)
 	if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 	
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
