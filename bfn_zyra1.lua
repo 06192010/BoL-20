@@ -42,7 +42,7 @@ local PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60
 
 function OnLoad()
 
-	require "Prodiction1"
+	require "Prodiction"
 
 	
 	ZyraMenu = scriptConfig("BFN Zyra", "BFN Zyra")
