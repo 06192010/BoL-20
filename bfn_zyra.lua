@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.12"
+local version = "0.13"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -92,6 +92,14 @@ function OnLoad()
 	ZyraMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 --	ZyraMenu.KSOptions:addParam("KSwithPassive","KS with Passive", SCRIPT_PARAM_ONOFF, true)	
 	
+--[[	ZyraMenu:addSubMenu("[Jungle Steal :@]", "KSJungle")
+	ZyraMenu.KSJungle:addParam("info", "~=[ not ready :P ]=~", SCRIPT_PARAM_INFO, "")
+	ZyraMenu.KSJungle:addParam("KSBlue","Steal Blue", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.KSJungle:addParam("KSRed","Steal Red", SCRIPT_PARAM_ONOFF, false)
+	ZyraMenu.KSJungle:addParam("KSDrake","Steal Drake", SCRIPT_PARAM_ONOFF, false)	
+	ZyraMenu.KSJungle:addParam("KSNashor","Steal Nashor", SCRIPT_PARAM_ONOFF, false)	
+]]--	
+	
 	ZyraMenu:addSubMenu("[Show in Game]", "ShowinGame")
 	ZyraMenu.ShowinGame:addParam("info", "~=[ New Settings will be saved after Reload ]=~", SCRIPT_PARAM_INFO, "")
 	ZyraMenu.ShowinGame:addParam("info", "~=[ Keys ]=~", SCRIPT_PARAM_INFO, "")
@@ -127,9 +135,7 @@ function OnLoad()
 	ZyraMenu.Ultimate:permaShow("UseAutoUlt")
 	end
 	
-	
 	-- interrupter 2.0 start
-
 InterruptSpells = {
 	["Teleport"]					= true, -- TP not tested
 	["AhriTumble"]					= true, -- Ahri R
@@ -771,6 +777,8 @@ function UltKillsteal()
 
 	return false
 end
+-- Jungle Steal <3
+
 -- Ult stolen from Kain :P
 function UltGroup(manual)
 	if not ts or not ts.target then return false end
