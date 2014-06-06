@@ -1,16 +1,16 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.06"
+local version = "0.07"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_zyra.lua".."?rand="..math.random(1,10000)
-local UPDATE_FILE_PATH = SCRIPT_PATH.."bfn_zyra.lua"
+local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_zyra1.lua".."?rand="..math.random(1,10000)
+local UPDATE_FILE_PATH = SCRIPT_PATH.."bfn_zyra1.lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
 function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>BFN Zyra:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
 if AUTOUPDATE then
-local ServerData = GetWebResult(UPDATE_HOST, "/BigFatNidalee/BoL/master/versions/bfn_zyra.version")
+local ServerData = GetWebResult(UPDATE_HOST, "/BigFatNidalee/BoL/master/versions/bfn_zyra1.version")
 if ServerData then
 ServerVersion = type(tonumber(ServerData)) == "number" and tonumber(ServerData) or nil
 if ServerVersion then
@@ -42,7 +42,7 @@ local PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60
 
 function OnLoad()
 
-	require "Prodiction"
+	require "Prodiction1"
 
 	
 	ZyraMenu = scriptConfig("BFN Zyra", "BFN Zyra")
@@ -70,18 +70,18 @@ function OnLoad()
 	
 	ZyraMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
 	ZyraMenu.ProdictionSettings:addParam("UsePacketsCast","Use Packets Cast", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.ProdictionSettings:addParam("info", "~=[ Callbacks ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.ProdictionSettings:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.ProdictionSettings:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.ProdictionSettings:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.ProdictionSettings:addParam("info", "~=[ Callbacks ]=~", SCRIPT_PARAM_INFO, "")
+--	ZyraMenu.ProdictionSettings:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
+--	ZyraMenu.ProdictionSettings:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.ProdictionSettings:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, false)
 	
-	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
-	ZyraMenu.KSOptions:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with E", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with R", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
+--	ZyraMenu.KSOptions:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
+--	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.KSOptions:addParam("KSwithQ","KS with E", SCRIPT_PARAM_ONOFF, false)
+--	ZyraMenu.KSOptions:addParam("KSwithQ","KS with R", SCRIPT_PARAM_ONOFF, false)
 --	ZyraMenu.KSOptions:addParam("KSwithPassive","KS with Passive", SCRIPT_PARAM_ONOFF, true)	
 	
 	ZyraMenu:addSubMenu("[Show in Game]", "ShowinGame")
@@ -210,7 +210,7 @@ function OnTick()
 	Harass1()
 	end
 	if ZyraMenu.Hotkeys.Harass2 then
-	Harass1()
+	Harass2()
 	end
 	-- Auto Ult
 	if ZyraMenu.Ultimate.UseAutoUlt then
