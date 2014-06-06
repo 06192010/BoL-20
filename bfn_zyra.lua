@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.11"
+local version = "0.12"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -87,10 +87,9 @@ function OnLoad()
 	ZyraMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile WQW / E", SCRIPT_PARAM_ONOFF, true)
 	
 	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
-	ZyraMenu.KSOptions:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with E", SCRIPT_PARAM_ONOFF, false)
-	ZyraMenu.KSOptions:addParam("KSwithQ","KS with R", SCRIPT_PARAM_ONOFF, false)
+	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.KSOptions:addParam("KSwithE","KS with E", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 --	ZyraMenu.KSOptions:addParam("KSwithPassive","KS with Passive", SCRIPT_PARAM_ONOFF, true)	
 	
 	ZyraMenu:addSubMenu("[Show in Game]", "ShowinGame")
@@ -105,8 +104,7 @@ function OnLoad()
 	ZyraMenu:addSubMenu("[Interrupter]", "Interrupter")
 	ZyraMenu.Interrupter:addParam("useinterrupter","Use Interrupter", SCRIPT_PARAM_ONOFF, true)
 	ZyraMenu.Interrupter:addParam("interrupterdebug","Use Interrupter DebugMode", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.Interrupter:addParam("info", "~=[ NOT TESTED ! ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.Interrupter:addParam("allowR","Allow to interrupt with R", SCRIPT_PARAM_ONOFF, false)
+	ZyraMenu.Interrupter:addParam("allowR","Allow to interrupt with R", SCRIPT_PARAM_ONOFF, true)
 	
 		
 	ZyraMenu:addSubMenu("[Draws]", "Draws")
@@ -162,7 +160,7 @@ InterruptSpells = {
 	["slashCast"]					= true, -- Trynda W
 	["ViQ"]							= true, -- Vi Q
 	["XerathArcanopulseChargeUp"]	= true, -- Xerath Q
---	["XenZhaoSweep"]				= true, -- Xin E
+	["XenZhaoSweep"]				= true, -- Xin E
 	["YasuoDashWrapper"]			= true, -- Yasuo E
 	["ZacE"]						= true, -- Zac E
 	["LeonaZenithBlade"]			= true, -- Leona E
@@ -173,6 +171,8 @@ InterruptSpells = {
 	["PantheonW"]					= true, -- Pantheon W
 	["CarpetBomb"]					= true, -- Corki W ?
 	["LucianR"]						= true, -- Lucian R
+	["OdinRecall"]					= true, -- Recall dominion
+	
 	
 	 
 		
@@ -271,6 +271,23 @@ function OnTick()
 	
 	end
 	end
+	--KS
+	
+	if ZyraMenu.KSOptions.KSwithQ then
+	if QReady then
+	KSQ()
+	end 
+	end	
+	
+	if ZyraMenu.KSOptions.KSwithE then
+	if EReady and not QReady then
+	KSE()
+	end 
+	end
+	
+	if ZyraMenu.KSOptions.KSwithR and not QReady and not EReady then
+	UltKillsteal()
+	end 
 
 	-- Harass
 	if ZyraMenu.Hotkeys.Harass1 and not ZyraMenu.Hotkeys.Combo then
@@ -350,24 +367,18 @@ end
 	end
 	
 	if InterruptSpells2[spell.name] and unit.team ~= myHero.team  then
-		
-		if  RReady and (GetDistance(unit) < ERange) then
-				if ZyraMenu.ProdictionSettings.UsePacketsCast then
-                Packet("S_CAST", {spellId = _E, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
-				else
-				CastSpell(_E, unit.x, unit.z)
-				end
-				if ZyraMenu.Interrupter.interrupterdebug then PrintChat("Tried 2 interrupt " .. spell.name) end
-        end
-		
-		if ZyraMenu.Interrupter.allowR and not EReady and RReady and (GetDistance(unit) < RRange) then
-			CastSpell(_R, unit.x, unit.z)
+				
+		if ZyraMenu.Interrupter.allowR and RReady and (GetDistance(unit) < RRange) then
+			Packet("S_CAST", {spellId = _R, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
 			if ZyraMenu.Interrupter.interrupterdebug then PrintChat("Tried 2 interrupt with R: " .. spell.name) end
 		end
 		
-	end
+
+
 end
 end
+end
+
 
 
 function mymanaislowerthen(percent)
@@ -716,14 +727,59 @@ end
 end 
 
 
--- Ult stolen from Kain xD
+function KSQ()
+	if not QReady then return false end
+
+	for _, enemy in pairs(GetEnemyHeroes()) do
+		if enemy and not enemy.dead and enemy.health < getDmg("Q", enemy, myHero) then
+			CastSpell(_Q, enemy.x, enemy.z)
+
+			return true
+		end
+	end
+
+	return false
+end
+
+function KSE()
+	if not EReady then return false end
+
+	for _, enemy in pairs(GetEnemyHeroes()) do
+		if enemy and not enemy.dead and enemy.health < getDmg("E", enemy, myHero) then
+			CastSpell(_E, enemy.x, enemy.z)
+
+			return true
+		end
+	end
+
+	return false
+end
+
+
+function UltKillsteal()
+	for _, enemy in pairs(GetEnemyHeroes()) do
+		if enemy and not enemy.dead and enemy.health < getDmg("R", enemy, myHero) then
+			local spellPos = GetAoESpellPosition(RRadius, ts.target, RDelay * 1000)
+			if spellPos and GetDistance(spellPos) <= RRange then
+				if not enemy.dead then
+					CastSpell(_R, spellPos.x, spellPos.z)
+					return true
+				end
+			end
+		end
+	end
+
+	return false
+end
+-- Ult stolen from Kain :P
 function UltGroup(manual)
 	if not ts or not ts.target then return false end
 
 	if not manual and EnemyCount(myHero, (RRange + RRadius)) < ZyraMenu.Ultimate.UltGroupMinimum then return false end
 
 	local spellPos = GetAoESpellPosition(RRadius, ts.target, RDelay * 1000)
-
+	CastSpell(_R, spellPos.x, spellPos.z)
+	
 	if spellPos and GetDistance(spellPos) <= RRange then
 		if manual or EnemyCount(spellPos, RRadius) >= ZyraMenu.Ultimate.UltGroupMinimum then
 
