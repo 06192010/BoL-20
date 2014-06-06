@@ -28,7 +28,6 @@ end
 end
 
 
-
 local QReady, WReady, EReady, RReady = false, false, false, false
 
 local QRange, QSpeed, QDelay, QWidth = 800, 1430, 0.25, 85
