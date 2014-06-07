@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.14"
+local version = "0.15"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -26,6 +26,9 @@ else
 AutoupdaterMsg("Error downloading version info")
 end
 end
+
+-- laneclear with spells
+-- passive ks, fire
 
 local QReady, WReady, EReady, RReady = false, false, false, false
 
@@ -256,8 +259,8 @@ function OnTick()
 	if ValidTarget(Target) then
 	
 	if EReady and WReady and QReady then
-	ProdE:GetPredictionCallBack(Target, CastWEW)
-	ProdQ:GetPredictionCallBack(Target, CastQ)
+	ProdE:GetPredictionCallBack(Target, CastE)
+	ProdQ:GetPredictionCallBack(Target, CastWQW)
 	end 
 	
 	if EReady and WReady and not QReady then
@@ -373,6 +376,12 @@ end
 function OnProcessSpell(unit, spell)
 
 
+--if unit.isMe and spell.name == "ZyraSeed" then
+--CastSpell(_Q, spell.endPos.x, spell.endPos.z)
+
+
+-- end
+
 if unit.isMe and spell.name == "ZyraQFissure" then
 CastSpell(_W, spell.endPos.x, spell.endPos.z)
 
@@ -467,6 +476,13 @@ end
 function CastWEW(unit,pos)
 
 	if EReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
+
+			if ZyraMenu.ProdictionSettings.UsePacketsCast then
+			Packet('S_CAST', {spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
+			else
+			CastSpell(_E, pos.x, pos.z)
+			end
+			
 		if (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -474,12 +490,6 @@ function CastWEW(unit,pos)
 			CastSpell(_W, pos.x, pos.z)
 			end
 		end
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-			Packet('S_CAST', {spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
-			else
-			CastSpell(_E, pos.x, pos.z)
-			end
-			
 	--[[
 		if (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
@@ -655,7 +665,7 @@ function AfterDashFunc (unit,pos)
 			CastSpell(_E, pos.x, pos.z)
 		end
 
-end
+	end
 
 		if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 
@@ -678,7 +688,7 @@ end
 		end
 ]]--
 
-end
+		end
 
 end 
 
@@ -696,7 +706,18 @@ function OnDashFunc (unit,pos)
 end 
 
 function AfterImmobileFunc (unit,pos)
-	if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+
+		if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
+	
+		if ZyraMenu.ProdictionSettings.UsePacketsCast then
+			Packet("S_CAST", {spellId = _E, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+		else
+			CastSpell(_E, pos.x, pos.z)
+		end
+
+		end
+	
+if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -718,15 +739,7 @@ function AfterImmobileFunc (unit,pos)
 		]]--
 end
 
-	if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
-	
-		if ZyraMenu.ProdictionSettings.UsePacketsCast then
-			Packet("S_CAST", {spellId = _E, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
-		else
-			CastSpell(_E, pos.x, pos.z)
-		end
 
-	end
 
 end 
 
@@ -752,7 +765,15 @@ function OnImmobileFunc (unit,pos)
 		CastSpell(_W, pos.x, pos.z)
 		end
 	]]--	
+		if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
+	
+		if ZyraMenu.ProdictionSettings.UsePacketsCast then
+			Packet("S_CAST", {spellId = _E, fromX =  pos.x, fromY =  pos.z, toX =  pos.x, toY =  pos.z}):send()
+		else
+			CastSpell(_E, pos.x, pos.z)
+		end
 
+		end
 
 end
 
