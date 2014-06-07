@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.13"
+local version = "0.14"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -89,7 +89,7 @@ function OnLoad()
 	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
 	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, true)
 	ZyraMenu.KSOptions:addParam("KSwithE","KS with E", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
+--	ZyraMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 --	ZyraMenu.KSOptions:addParam("KSwithPassive","KS with Passive", SCRIPT_PARAM_ONOFF, true)	
 	
 --[[	ZyraMenu:addSubMenu("[Jungle Steal :@]", "KSJungle")
@@ -179,10 +179,9 @@ InterruptSpells = {
 	["LucianR"]						= true, -- Lucian R
 	["OdinRecall"]					= true, -- Recall dominion
 	
-	
-	 
 		
 }
+
 
 InterruptSpells2 = {
 
@@ -226,6 +225,15 @@ function OnTick()
 	
 	ts:update()
 	Target = ts.target
+	--[[
+	if interrupter == true then
+				if ZyraMenu.ProdictionSettings.UsePacketsCast then
+                Packet("S_CAST", {spellId = _E, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+				else
+				CastSpell(_E, unit.x, unit.z)
+				end
+	end 
+]]--
 
 	if ValidTarget(Target) then
 	ProdQ:GetPredictionCallBack(Target, GetQPos)
@@ -291,9 +299,9 @@ function OnTick()
 	end 
 	end
 	
-	if ZyraMenu.KSOptions.KSwithR and not QReady and not EReady then
-	UltKillsteal()
-	end 
+--	if ZyraMenu.KSOptions.KSwithR and not QReady and not EReady then
+--	UltKillsteal()
+--	end 
 
 	-- Harass
 	if ZyraMenu.Hotkeys.Harass1 and not ZyraMenu.Hotkeys.Combo then
@@ -345,14 +353,32 @@ function OnTick()
     AfterImmobilePos = nil	
     OnImmobilePos = nil	
 end
+--[[
+function OnGainBuff(unit, buff)
 
+	if InterruptSpells[buff.name] and unit.team ~= myHero.team  then
+		interrupter = true
+		PrintChat("TRUE")
+	end 
+
+end
+
+function OnLoseBuff(unit, buff)
+
+	if InterruptSpells[buff.name] and unit.team ~= myHero.team  then
+		interrupter = false
+		PrintChat("FALSE")
+	end 
+		
+end 
+]]--
 function OnProcessSpell(unit, spell)
 
-if unit.isMe and spell.name == "ZyraSeed" then
-CastSpell(_W, spell.endPos.x, spell.endPos.z)
-end
+
 if unit.isMe and spell.name == "ZyraQFissure" then
 CastSpell(_W, spell.endPos.x, spell.endPos.z)
+
+
 end
 --if unit.isMe and spell.name == "ZyraGraspingRoots" then
 --CastSpell(_W, spell.endPos.x, spell.endPos.z)
@@ -428,13 +454,13 @@ function CastWQW(unit,pos)
 			else
 			CastSpell(_Q, pos.x, pos.z)
 			end
-			
+--[[			
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 			else 
 			CastSpell(_W, pos.x, pos.z)
 			end
-	
+]]--	
 	end 
 	
 end 
@@ -443,7 +469,6 @@ end
 function CastWEW(unit,pos)
 
 	if EReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
-	
 		if (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -451,13 +476,13 @@ function CastWEW(unit,pos)
 			CastSpell(_W, pos.x, pos.z)
 			end
 		end
-		
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 			else
 			CastSpell(_E, pos.x, pos.z)
 			end
 			
+	--[[
 		if (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -465,6 +490,7 @@ function CastWEW(unit,pos)
 			CastSpell(_W, pos.x, pos.z)
 			end
 		end
+	]]--	
 	
 	end 
 	
@@ -505,7 +531,7 @@ function Harass1(unit,pos)
 	
 	if ZyraMenu.Harass.Harass1Mode == 1 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-	
+
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
@@ -519,18 +545,18 @@ function Harass1(unit,pos)
 					CastSpell(_Q, pos.x, pos.z)
 					end
 
-
+--[[
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
-
+]]--
 		end 
 	end
 	if ZyraMenu.Harass.Harass1Mode == 2 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-			
+
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
@@ -542,12 +568,13 @@ function Harass1(unit,pos)
 					else
 					CastSpell(_Q, pos.x, pos.z)
 					end
-
+--[[
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
+]]--
 		end
 		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 				
@@ -562,10 +589,9 @@ end
 	
 function Harass2(unit,pos)
 	
-	
 	if ZyraMenu.Harass.Harass2Mode == 1 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-	
+
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
@@ -579,18 +605,19 @@ function Harass2(unit,pos)
 					CastSpell(_Q, pos.x, pos.z)
 					end
 
-
+--[[
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
+]]--
 
 		end 
 	end
 	if ZyraMenu.Harass.Harass2Mode == 2 then
 		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-			
+
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
@@ -602,12 +629,13 @@ function Harass2(unit,pos)
 					else
 					CastSpell(_Q, pos.x, pos.z)
 					end
-
+--[[
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 					else 
 					CastSpell(_W, pos.x, pos.z)
 					end
+]]--
 		end
 		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 				
@@ -632,7 +660,7 @@ function AfterDashFunc (unit,pos)
 end
 
 		if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-	
+
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
@@ -644,14 +672,13 @@ end
 		else
 		CastSpell(_Q, pos.x, pos.z)
 		end
-		
+--[[		
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
 		CastSpell(_W, pos.x, pos.z)
 		end
-		
-
+]]--
 
 end
 
@@ -672,7 +699,7 @@ end
 
 function AfterImmobileFunc (unit,pos)
 	if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-	
+
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
@@ -684,12 +711,13 @@ function AfterImmobileFunc (unit,pos)
 		else
 		CastSpell(_Q, pos.x, pos.z)
 		end
-		
+--[[		
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
 		CastSpell(_W, pos.x, pos.z)
 		end
+		]]--
 end
 
 	if EReady  and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
@@ -707,7 +735,7 @@ end
 
 function OnImmobileFunc (unit,pos)
 	if QReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-	
+
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
@@ -719,13 +747,13 @@ function OnImmobileFunc (unit,pos)
 		else
 		CastSpell(_Q, pos.x, pos.z)
 		end
-		
+	--[[	
 		if ZyraMenu.ProdictionSettings.UsePacketsCast then
 		Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 		else 
 		CastSpell(_W, pos.x, pos.z)
 		end
-		
+	]]--	
 
 
 end
@@ -734,26 +762,28 @@ end
 
 
 function KSQ()
-	if not QReady then return false end
 
 	for _, enemy in pairs(GetEnemyHeroes()) do
 		if enemy and not enemy.dead and enemy.health < getDmg("Q", enemy, myHero) then
+		if GetDistance(enemy) <= QRange then
 			CastSpell(_Q, enemy.x, enemy.z)
-
+	 end
 			return true
 		end
 	end
-
+	
 	return false
+	
 end
 
 function KSE()
-	if not EReady then return false end
+
 
 	for _, enemy in pairs(GetEnemyHeroes()) do
 		if enemy and not enemy.dead and enemy.health < getDmg("E", enemy, myHero) then
+			if GetDistance(enemy) <= ERange then
 			CastSpell(_E, enemy.x, enemy.z)
-
+			end
 			return true
 		end
 	end
@@ -761,7 +791,7 @@ function KSE()
 	return false
 end
 
-
+--[[
 function UltKillsteal()
 	for _, enemy in pairs(GetEnemyHeroes()) do
 		if enemy and not enemy.dead and enemy.health < getDmg("R", enemy, myHero) then
@@ -777,6 +807,7 @@ function UltKillsteal()
 
 	return false
 end
+]]--
 -- Jungle Steal <3
 
 -- Ult stolen from Kain :P
