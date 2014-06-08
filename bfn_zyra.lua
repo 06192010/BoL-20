@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.18"
+local version = "0.19"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -84,6 +84,7 @@ function OnLoad()
 	
 	ZyraMenu:addSubMenu("[Ultimate]", "Ultimate")
 	ZyraMenu.Ultimate:addParam("UseAutoUlt","Use Auto Ult", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.Ultimate:addParam("UseAutoUltCombo","Auto Ult Only If Combo Pressed", SCRIPT_PARAM_ONOFF, true)
 	ZyraMenu.Ultimate:addParam("UltGroupMinimum", "Ult Enemy Team Min:", SCRIPT_PARAM_SLICE, 3, 2, 5, 0)
 	
 	ZyraMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
@@ -338,7 +339,13 @@ function OnTick()
 	end
 	-- Auto Ult
 	if not PReady and ZyraMenu.Ultimate.UseAutoUlt then
-	UltGroup()
+		if ZyraMenu.Ultimate.UseAutoUltCombo and ZyraMenu.Hotkeys.Combo then
+			UltGroup()
+		end
+		if not ZyraMenu.Ultimate.UseAutoUltCombo then
+			UltGroup()
+		end
+		
 	end
 
 
