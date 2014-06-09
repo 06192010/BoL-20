@@ -1,6 +1,6 @@
 if myHero.charName ~= "Zyra" then return end
 
-local version = "0.20"
+local version = "0.21"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -27,17 +27,36 @@ AutoupdaterMsg("Error downloading version info")
 end
 end
 
+--[[
+
+To-do: 
+		passive get to hit beter
+		review auto ult 
+		review double w
+
+]]--
 
 local QReady, WReady, EReady, RReady = false, false, false, false
 
-local QRange, QSpeed, QDelay, QWidth = 800, 1430, 0.25, 85
+local QRange, QSpeed, QDelay, QWidth = 810, 1435, 0.245, 85
 local WRange, WSpeed, WDelay, WWidth = 825, math.huge, 0.2432, 10
-local ERange, ESpeed, EDelay, EWidth = 1100, 900, 0.24, 70
+local ERange, ESpeed, EDelay, EWidth = 1125, 935, 0.245, 70
 local RRange, RSpeed, RDelay, RRadius = 700, math.huge, 0.500, 500
---local PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60
 local PRange, PSpeed, PDelay, PWidth = 1470, 1900, 0.485, 60
 
-local KSWithPassive = false
+--[[
+
+
+	QRange, QSpeed, QDelay, QRadius = 800, math.huge, 0.7, 85 -- Old Delay: 0.500
+	WRange, WSpeed, WDelay, WRadius = 825, math.huge, 0.2432, 10
+	ERange, ESpeed, EDelay, EWidth = 1100, 1150, 0.16, 70 -- Some discrepency on delay: between .16 and .25
+	RRange, RSpeed, RDelay, RRadius = 700, math.huge, 0.500, 500
+	PRange, PSpeed, PDelay, PWidth = 1470, 1870, 0.500, 60 -- Need to review this. Passive missing more than it should.
+
+	
+	
+	]]--
+
 
 
 local function getHitBoxRadius(target)
@@ -91,10 +110,10 @@ function OnLoad()
 	ZyraMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
 	ZyraMenu.ProdictionSettings:addParam("UsePacketsCast","Use Packets Cast", SCRIPT_PARAM_ONOFF, true)
 	ZyraMenu.ProdictionSettings:addParam("info", "~=[ Callbacks ]=~", SCRIPT_PARAM_INFO, "")
-	ZyraMenu.ProdictionSettings:addParam("OnDash","OnDash E", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.ProdictionSettings:addParam("AfterDash","AfterDash E / WQW", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile WQW", SCRIPT_PARAM_ONOFF, true)
-	ZyraMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile WQW / E", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.ProdictionSettings:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.ProdictionSettings:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, true)
+	ZyraMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, true)
 	
 	ZyraMenu:addSubMenu("[KS Options]", "KSOptions")
 	ZyraMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, true)
@@ -154,7 +173,7 @@ InterruptSpells = {
 	["AhriTumble"]					= true, -- Ahri R
 	["AhriSeduce"]					= true, -- Ahri E
 	["AkaliShadowDance"]			= true, -- Akali R
-	["BandageToss"]					= true, -- Amumu Q
+--	["BandageToss"]					= true, -- Amumu Q
 	["BraumW"]						= true, -- Braum w
 	["BraumRWrapper"]				= true, -- Braum R
 --	["RocketGrab"]					= true, -- Blitz Q
@@ -169,7 +188,7 @@ InterruptSpells = {
 	["KhazixE"]						= true, -- Khazix E
 	["LeblancSlide"]				= true, -- Leblanc W
 	["blindmonkqtwo"]				= true, -- Lee Sin Q2
-	["NautilusAnchorDrag"]			= true, -- Nautilus Q
+--	["NautilusAnchorDrag"]			= true, -- Nautilus Q
 	["QuinnE"]						= true, -- Quinn E
 	["RenektonSliceAndDice"]		= true, -- Renek E
 	["SejuaniArcticAssault"]		= true, -- Sejuani Q
@@ -182,7 +201,7 @@ InterruptSpells = {
 	["XenZhaoSweep"]				= true, -- Xin E
 	["YasuoDashWrapper"]			= true, -- Yasuo E
 	["ZacE"]						= true, -- Zac E
-	["LeonaZenithBlade"]			= true, -- Leona E
+--	["LeonaZenithBlade"]			= true, -- Leona E
 	["Pantheon_GrandSkyfall_Jump"]	= true, -- Panth R
 	["ShenStandUnited"]				= true, -- Shen R
 --	["VarusQ"]						= true, -- Varus Q
@@ -270,44 +289,29 @@ function OnTick()
 	
 	-- Passive 
 	if PReady and ZyraMenu.KSOptions.AutoPassive then
-	Passive()
-		if KSWithPassive == false and ValidTarget(Target) then
+		if ValidTarget(Target) then
 		ProdP:GetPredictionCallBack(Target, CastP)
 		end 
 	end
 	
 	
-	-- Combo
-	if not PReady and ZyraMenu.Hotkeys.Combo then
-	if ValidTarget(Target) then
 	
-	if EReady and WReady and QReady then
-	ProdE:GetPredictionCallBack(Target, CastE)
+	-- new combo
+	if not PReady and ZyraMenu.Hotkeys.Combo and ValidTarget(Target) then
+		if EReady and WReady and QReady then
+			ProdE:GetPredictionCallBack(Target, CastE)
+			ProdQ:GetPredictionCallBack(Target, CastWQW)	
+		elseif EReady and not WReady and QReady then
+			ProdE:GetPredictionCallBack(Target, CastE)
+			ProdQ:GetPredictionCallBack(Target, CastQ)
+		elseif EReady and not WReady and not QReady then
+			ProdE:GetPredictionCallBack(Target, CastE)
+		elseif not EReady and WReady and QReady then
+			ProdQ:GetPredictionCallBack(Target, CastWQW)
+		elseif not EReady and not WReady and QReady then
+			ProdQ:GetPredictionCallBack(Target, CastQ)
+		end 
 	end 
-	
-	if EReady and WReady and not QReady then
-	ProdE:GetPredictionCallBack(Target, CastWEW)
-	end 
-	
-	if EReady and not WReady and QReady then
-	ProdE:GetPredictionCallBack(Target, CastE)
-	ProdQ:GetPredictionCallBack(Target, CastQ)
-	end 
-	
-	if not EReady and WReady and QReady then
-	ProdQ:GetPredictionCallBack(Target, CastWQW)
-	end 
-	
-	if EReady and not WReady and not QReady then
-	ProdE:GetPredictionCallBack(Target, CastE)
-	end 
-	
-	if not EReady and not WReady and QReady then
-	ProdQ:GetPredictionCallBack(Target, CastQ)
-	end 
-	
-	end
-	end
 	--KS
 	
 	if ZyraMenu.KSOptions.KSwithQ then
@@ -465,32 +469,17 @@ function CastWQW(unit,pos)
 			else
 			CastSpell(_Q, pos.x, pos.z)
 			end	
-	end 
-	
-end 
-
-
-function CastWEW(unit,pos)
-
-	if EReady and WReady and (GetDistance(pos) - getHitBoxRadius(unit)/2 < ERange) then
-
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-			Packet('S_CAST', {spellId = _E, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
-			else
-			CastSpell(_E, pos.x, pos.z)
-			end
 			
-		if (GetDistance(pos) - getHitBoxRadius(unit)/2 < WRange) then
+			
 			if ZyraMenu.ProdictionSettings.UsePacketsCast then
 			Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
 			else 
 			CastSpell(_W, pos.x, pos.z)
 			end
-		end
-	
 	end 
 	
 end 
+
 
 function CastQ(unit,pos)
 
@@ -577,7 +566,15 @@ function Harass1(unit,pos)
 	end
 	
 	if ZyraMenu.Harass.Harass1Mode == 2 then
-		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+	
+			if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+				
+					if ZyraMenu.ProdictionSettings.UsePacketsCast then
+					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
+					else
+					CastSpell(_Q, pos.x, pos.z)
+					end
+			elseif QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -592,14 +589,7 @@ function Harass1(unit,pos)
 					end
 
 		end
-		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass1) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-				
-					if ZyraMenu.ProdictionSettings.UsePacketsCast then
-					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
-					else
-					CastSpell(_Q, pos.x, pos.z)
-					end
-		end
+
 	end 
 end
 	
@@ -626,7 +616,14 @@ function Harass2(unit,pos)
 	end
 	
 	if ZyraMenu.Harass.Harass2Mode == 2 then
-		if QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
+				
+					if ZyraMenu.ProdictionSettings.UsePacketsCast then
+					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
+					else
+					CastSpell(_Q, pos.x, pos.z)
+					end
+elseif QReady and WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
 
 					if ZyraMenu.ProdictionSettings.UsePacketsCast then
 					Packet('S_CAST', {spellId = _W, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
@@ -641,14 +638,7 @@ function Harass2(unit,pos)
 					end
 
 		end
-		if QReady and not WReady and not mymanaislowerthen(ZyraMenu.Harass.ManaSliderHarass2) and (GetDistance(pos) - getHitBoxRadius(unit)/2 < QRange) then
-				
-					if ZyraMenu.ProdictionSettings.UsePacketsCast then
-					Packet('S_CAST', {spellId = _Q, toX = pos.x, toY = pos.z, fromX = pos.x, fromY = pos.z}):send(true)
-					else
-					CastSpell(_Q, pos.x, pos.z)
-					end
-		end
+
 	end 
 end
 -- Farm
@@ -834,57 +824,6 @@ function KSE()
 	end
 
 	return false
-end
-
-function Passive()
-	-- Hit any killable enemy.
-	for _, enemy in pairs(GetEnemyHeroes()) do
-		if enemy and not enemy.dead and enemy.health < getDmg("P", enemy, myHero) then
-			if GetDistance(enemy) <= PRange then
-			KSWithPassive = true
-			
-			if EReady then
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _E, toX = enemy.x, toY = enemy.z, fromX = enemy.x, fromY = enemy.z}):send(true)
-			else
-				CastSpell(_E, enemy.x, enemy.z)
-			end
-			end
-						
-			if not EReady and QReady then
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _Q, toX = enemy.x, toY = enemy.z, fromX = enemy.x, fromY = enemy.z}):send(true)
-			else
-				CastSpell(_Q, enemy.x, enemy.z)
-			end
-			end
-						
-			if not EReady and not QReady and WReady then
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _W, toX = enemy.x, toY = enemy.z, fromX = enemy.x, fromY = enemy.z}):send(true)
-			else
-				CastSpell(_W, enemy.x, enemy.z)
-			end
-			end
-						
-			if not EReady and not QReady and not WReady and RReady then
-			if ZyraMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _R, toX = enemy.x, toY = enemy.z, fromX = enemy.x, fromY = enemy.z}):send(true)
-			else
-				CastSpell(_R, enemy.x, enemy.z)
-			end
-			end
-			
-			return true
-
-			
-		end
-		
-
-	return false
-
-end
-end
 end
 
 
