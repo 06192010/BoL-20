@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.01"
+local version = "0.02"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -63,13 +63,13 @@ function PluginOnLoad()
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseQ","Use Q", SCRIPT_PARAM_ONOFF, true)
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseE","Use E", SCRIPT_PARAM_ONOFF, false)
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseR","Use R", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
+	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 	
 	AutoCarry.PluginMenu.Harass:addParam("info", "~=[ Harass Lane Clear ]=~", SCRIPT_PARAM_INFO, "")
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseQ","Use Q", SCRIPT_PARAM_ONOFF, true)
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseE","Use E", SCRIPT_PARAM_ONOFF, false)
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseR","Use R", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
+	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
 	
 	
 	AutoCarry.PluginMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
@@ -109,7 +109,7 @@ function PluginOnLoad()
 	AutoCarry.PluginMenu.Draws.RSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.RSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
 	AutoCarry.PluginMenu.Draws:addParam("DrawAARange","Draw AA Range", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, true)
+	AutoCarry.PluginMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, false)
 	AutoCarry.PluginMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
 	AutoCarry.PluginMenu.Draws:addParam("DrawERange","Draw E Range", SCRIPT_PARAM_ONOFF, false)
 	AutoCarry.PluginMenu.Draws:addParam("DrawRRange","Draw R Range", SCRIPT_PARAM_ONOFF, false)
@@ -156,7 +156,7 @@ function Combo()
 			end
 		end			
 	end 	
-	if AutoCarry.PluginMenu.Combo.UseE and EReady and myHero.mana >= ManaCost(E) and GetDistance(Target) <= ERange then
+	if AutoCarry.PluginMenu.Combo.UseE and EReady  and GetDistance(Target) <= ERange then
 		local epos, einfo = Prodiction.GetPrediction(Target, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		
 		if epos and einfo.hitchance >= 1 then
@@ -196,7 +196,7 @@ function Harass1()
 			end
 		end			
 	end 	
-	if AutoCarry.PluginMenu.Harass.Harass1UseE and EReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass1) and myHero.mana >= ManaCost(E) and GetDistance(Target) <= ERange then
+	if AutoCarry.PluginMenu.Harass.Harass1UseE and EReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass1)  and GetDistance(Target) <= ERange then
 		local epos, einfo = Prodiction.GetPrediction(Target, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		
 		if epos and einfo.hitchance >= 1 then
@@ -236,7 +236,7 @@ function Harass2()
 			end
 		end			
 	end 	
-	if AutoCarry.PluginMenu.Harass.Harass2UseE and EReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2) and myHero.mana >= ManaCost(E) and GetDistance(Target) <= ERange then
+	if AutoCarry.PluginMenu.Harass.Harass2UseE and EReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2)  and GetDistance(Target) <= ERange then
 		local epos, einfo = Prodiction.GetPrediction(Target, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		
 		if epos and einfo.hitchance >= 1 then
@@ -279,7 +279,7 @@ function KS()
 		end	
 		end
 --
-		if EReady and AutoCarry.PluginMenu.KSOptions.KSwithE and ValidTarget(enemy, ERange) and enemy.health < getDmg("E",enemy,myHero) and myHero.mana >= ManaCost(E) then
+		if EReady and AutoCarry.PluginMenu.KSOptions.KSwithE and ValidTarget(enemy, ERange) and enemy.health < getDmg("E",enemy,myHero)  then
 		local epos, einfo = Prodiction.GetPrediction(enemy, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		if epos and einfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
