@@ -1,10 +1,10 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.01"
+local version = "0.02"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
-local UPDATE_PATH = "/BigFatNidalee/BoL/master/prodiction1 projects/Common/SidasAutoCarryPlugin - Corki.lua".."?rand="..math.random(1,10000)
+local UPDATE_PATH = "/BigFatNidalee/BoL/master/prodiction1-projects/Common/SidasAutoCarryPlugin - Corki.lua".."?rand="..math.random(1,10000)
 local UPDATE_FILE_PATH = SCRIPT_PATH.."/Common/SidasAutoCarryPlugin - Corki.lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
@@ -45,7 +45,7 @@ local RRange, RSpeed, RDelay, RWidth = 1300, 2000, 0.165, 80
 --	AutoCarry.MainMenu.LastHit
 --	AutoCarry.MainMenu.LaneClear
 
-
+-- upd
 function PluginOnLoad()
 
 
