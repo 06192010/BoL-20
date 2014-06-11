@@ -1,6 +1,6 @@
 if myHero.charName ~= "Graves" then return end
 
-local version = "0.01"
+local version = "0.02"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -411,9 +411,6 @@ end
 
 function PluginOnDraw()
 
-	if Target then
-	TEST:DrawCollision(myHero, Target)
-	end	
 
 	if AutoCarry.PluginMenu.Draws.UselowfpsDraws and not myHero.dead then
 		lowfpsdraws()
