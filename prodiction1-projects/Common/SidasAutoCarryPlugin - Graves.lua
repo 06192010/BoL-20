@@ -1,6 +1,6 @@
 if myHero.charName ~= "Graves" then return end
 
-local version = "0.03"
+local version = "0.04"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -171,7 +171,7 @@ function KS()
 --	
 		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
 		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
-		local coll = Collision(RRange, RSpeed, RDelay, RWidth2)
+		local Rcoll = Collision(RRange, RSpeed, RDelay, RWidth2)
 		
 		if rpos and rinfo.hitchance >= 3 and not Rcoll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
