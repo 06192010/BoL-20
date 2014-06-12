@@ -33,7 +33,7 @@ local QRange, QSpeed, QDelay, QWidth = 825, 850, 0.5, 250
 local WRange = 800
 local AArange = 525
 local ERange, ESpeed, EDelay, EWidth = 730, 902, 0.5, 100
-local RRange, RSpeed, RDelay, RWidth = 1300, 2000, 0.165, 80
+local RRange, RSpeed, RDelay, RWidth = 1225, 2000, 0.165, 80
 --local RRange2, RSpeed2, RDelay2, RWidth2 = 1500, 2000, 0.165, unknown
 
 -- q 825, ?, -0.5, radius 250
