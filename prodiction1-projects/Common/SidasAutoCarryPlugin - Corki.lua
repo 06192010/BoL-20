@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.04"
+local version = "0.05"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -45,6 +45,13 @@ local RRange, RSpeed, RDelay, RWidth = 1225, 2000, 0.165, 80
 --	AutoCarry.MainMenu.LastHit
 --	AutoCarry.MainMenu.LaneClear
 
+-- TIME LEFT
+local IEid = 3031
+local BOTkRid = 3153
+local iebought = 1
+local BOTkRdmg = 0
+local Lethality = 1
+--
 
 function PluginOnLoad()
 
@@ -88,26 +95,38 @@ function PluginOnLoad()
 	AutoCarry.PluginMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 	
 	AutoCarry.PluginMenu:addSubMenu("[Draws]", "Draws")
+	
+	AutoCarry.PluginMenu.Draws:addSubMenu("[Estimated Time]", "EstimatedTime")
+	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("drawaa", "Draw time to kill", SCRIPT_PARAM_ONOFF, true)
+	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("usecrits", "Use crits at calculations", SCRIPT_PARAM_ONOFF, true)
+	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("autos", "Estimate AAs to kill", SCRIPT_PARAM_ONOFF, false)
+	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("lethality", "Lethality Points", SCRIPT_PARAM_SLICE, 0, 0, 2, 0)
+
 	AutoCarry.PluginMenu.Draws:addSubMenu("[AA Settings]", "AASettings")
 	AutoCarry.PluginMenu.Draws.AASettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	AutoCarry.PluginMenu.Draws.AASettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.AASettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	
 	AutoCarry.PluginMenu.Draws:addSubMenu("[Q Settings]", "QSettings")
 	AutoCarry.PluginMenu.Draws.QSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	AutoCarry.PluginMenu.Draws.QSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.QSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	
 	AutoCarry.PluginMenu.Draws:addSubMenu("[W Settings]", "WSettings")
 	AutoCarry.PluginMenu.Draws.WSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	AutoCarry.PluginMenu.Draws.WSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.WSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	
 	AutoCarry.PluginMenu.Draws:addSubMenu("[E Settings]", "ESettings")
 	AutoCarry.PluginMenu.Draws.ESettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	AutoCarry.PluginMenu.Draws.ESettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.ESettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	
 	AutoCarry.PluginMenu.Draws:addSubMenu("[R Settings]", "RSettings")
 	AutoCarry.PluginMenu.Draws.RSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	AutoCarry.PluginMenu.Draws.RSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
 	AutoCarry.PluginMenu.Draws.RSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	
 	AutoCarry.PluginMenu.Draws:addParam("DrawAARange","Draw AA Range", SCRIPT_PARAM_ONOFF, true)
 	AutoCarry.PluginMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, false)
 	AutoCarry.PluginMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
@@ -150,6 +169,14 @@ function PluginOnTick()
 	if Target and AutoCarry.MainMenu.LaneClear then Harass2() end
 	KS()
 	
+	
+	-- TIME LEFT
+	if myHero.range < 350 then
+		Lethality = 1 + 0.1*AutoCarry.PluginMenu.Draws.EstimatedTime.lethality
+	else
+		Lethality = 1 + 0.05*AutoCarry.PluginMenu.Draws.EstimatedTime.lethality
+	end
+	--
 
 end 
 
@@ -322,6 +349,30 @@ function KS()
 	end
 
 end
+ -- << --  -- << --  -- << --  -- << -- [TIME LEFT]  -- >> --  -- >> --  -- >> --  -- >> --
+function DPS(Enemy)
+	return Enemy.health/ (myHero:CalcDamage(Enemy, myHero.totalDamage) * myHero.attackSpeed)
+end
+
+function CRIT(Enemy)
+	if GetInventorySlotItem(IEid) ~=nil then
+		iebought = 1.5
+	else
+		iebought = 1
+	end
+	
+	if GetInventorySlotItem(BOTkRid) ~=nil then
+		BOTkRdmg = myHero:CalcDamage(Enemy, (Enemy.health)*0.05)
+	else
+		BOTkRdmg = 0
+	end
+	
+
+	CorkiPassive = getDmg("P", Enemy, myHero)
+
+	
+	return Enemy.health/ ((myHero:CalcDamage(Enemy, myHero.totalDamage) + (Lethality*iebought*myHero:CalcDamage(Enemy, myHero.totalDamage)*myHero.critChance) + BOTkRdmg + CorkiPassive) * myHero.attackSpeed)
+end
 
  -- << --  -- << --  -- << --  -- << -- [Passive]  -- >> --  -- >> --  -- >> --  -- >> --
 
@@ -352,7 +403,24 @@ end
  -- << --  -- << --  -- << --  -- << -- [DRAWS]  -- >> --  -- >> --  -- >> --  -- >> --
 
 function PluginOnDraw()
-
+	-- TIME LEFT
+		for _, Enemy in pairs(GetEnemyHeroes()) do
+        if ValidTarget(Enemy) and Enemy.visible and AutoCarry.PluginMenu.Draws.EstimatedTime.drawaa then
+			local timetokill
+			if AutoCarry.PluginMenu.Draws.EstimatedTime.usecrits then
+				timetokill = string.format("%4.1f", CRIT(Enemy)) .. "s to dead"
+				DrawText3D(tostring(timetokill), Enemy.x, Enemy.y, Enemy.z, 20, RGB(255, 255, 255), true)
+			else
+				timetokill = string.format("%4.1f", DPS(Enemy)) .. "s to dead"
+				DrawText3D(tostring(timetokill), Enemy.x, Enemy.y, Enemy.z, 20, RGB(255, 255, 255), true)
+			end
+			if AutoCarry.PluginMenu.Draws.EstimatedTime.autos then
+				autostokill = "AAs to kill:" .. string.format("%4.0f", 1+(Enemy.health/(myHero:CalcDamage(Enemy, myHero.totalDamage) + CorkiPassive + BOTkRdmg + (Lethality*iebought*myHero:CalcDamage(Enemy, myHero.totalDamage)*myHero.critChance))))
+				DrawText3D(tostring(autostokill), Enemy.x+10, Enemy.y, Enemy.z+65, 20, RGB(255, 255, 255), true)
+			end
+        end
+    end
+	--
 	if AutoCarry.PluginMenu.Draws.UselowfpsDraws and not myHero.dead then
 		lowfpsdraws()
 	end
