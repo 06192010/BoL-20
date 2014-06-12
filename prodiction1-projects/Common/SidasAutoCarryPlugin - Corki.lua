@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.02"
+local version = "0.03"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -31,7 +31,7 @@ local Target = AutoCarry.GetAttackTarget()
 local QReady, WReady, EReady, RReady = false, false, false, false
 local QRange, QSpeed, QDelay, QWidth = 825, 850, 0.5, 250
 local WRange = 800
-local AArange = 610
+local AArange = 525
 local ERange, ESpeed, EDelay, EWidth = 730, 902, 0.5, 100
 local RRange, RSpeed, RDelay, RWidth = 1300, 2000, 0.165, 80
 --local RRange2, RSpeed2, RDelay2, RWidth2 = 1500, 2000, 0.165, unknown
@@ -119,12 +119,19 @@ function PluginOnLoad()
 
 
 
+	if AutoCarry.Skills then IsSACReborn = true else IsSACReborn = false end
 
+	-- Disable SAC Reborn's skills. Ours are better.
+	if IsSACReborn then
+		AutoCarry.Skills:DisableAll()
+	end
+	
 	PrintChat("<font color='#c9d7ff'> BFN Corki </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
 
 
 
 end 
+
 function PluginOnTick()
 
 	Target = AutoCarry.GetAttackTarget()
@@ -137,10 +144,19 @@ function PluginOnTick()
 	if Target and AutoCarry.MainMenu.MixedMode then Harass1() end
 	if Target and AutoCarry.MainMenu.LaneClear then Harass2() end
 	KS()
+	dmginfo()
 
 end 
 
-
+function dmginfo()
+	for i = 1, heroManager.iCount do
+		local enemy = heroManager:getHero(i)
+		if ValidTarget(enemy) then
+			autostokill = math.ceil(enemy.health/getDmg("AD",enemy,myHero))
+			DrawText3D(tostring(autostokill), enemy.x, enemy.y, enemy.z, 20, ARGB(4294967295,4294967295,4294967295,4294967295), true)
+		end
+	end 
+end
 
 function Combo()
 	if not Target then return end
@@ -268,7 +284,7 @@ function KS()
 	for i = 1, heroManager.iCount do
 	local enemy = heroManager:getHero(i)
 --	
-		if QReady and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and enemy.health < getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(Q) then
+		if QReady and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and not enemy.dead and enemy.health < getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(Q) then
 		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
@@ -279,7 +295,7 @@ function KS()
 		end	
 		end
 --
-		if EReady and AutoCarry.PluginMenu.KSOptions.KSwithE and ValidTarget(enemy, ERange) and enemy.health < getDmg("E",enemy,myHero)  then
+		if EReady and AutoCarry.PluginMenu.KSOptions.KSwithE and ValidTarget(enemy, ERange) and not enemy.dead and enemy.health < getDmg("E",enemy,myHero)  then
 		local epos, einfo = Prodiction.GetPrediction(enemy, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		if epos and einfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
@@ -290,7 +306,7 @@ function KS()
 		end	
 		end
 --	
-		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
+		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and not enemy.dead and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
 		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
 		
@@ -329,7 +345,6 @@ end
 
 
 function PluginOnDraw()
-	
 
 	if AutoCarry.PluginMenu.Draws.UselowfpsDraws and not myHero.dead then
 		lowfpsdraws()
