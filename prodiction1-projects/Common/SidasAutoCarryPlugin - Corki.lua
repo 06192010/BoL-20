@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.03"
+local version = "0.04"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -124,7 +124,12 @@ function PluginOnLoad()
 	-- Disable SAC Reborn's skills. Ours are better.
 	if IsSACReborn then
 		AutoCarry.Skills:DisableAll()
+		AutoCarry.Plugins:RegisterBonusLastHitDamage(PassiveFarm)
 	end
+	
+	
+		
+	
 	
 	PrintChat("<font color='#c9d7ff'> BFN Corki </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
 
@@ -144,19 +149,12 @@ function PluginOnTick()
 	if Target and AutoCarry.MainMenu.MixedMode then Harass1() end
 	if Target and AutoCarry.MainMenu.LaneClear then Harass2() end
 	KS()
-	dmginfo()
+	
 
 end 
 
-function dmginfo()
-	for i = 1, heroManager.iCount do
-		local enemy = heroManager:getHero(i)
-		if ValidTarget(enemy) then
-			autostokill = math.ceil(enemy.health/getDmg("AD",enemy,myHero))
-			DrawText3D(tostring(autostokill), enemy.x, enemy.y, enemy.z, 20, ARGB(4294967295,4294967295,4294967295,4294967295), true)
-		end
-	end 
-end
+
+ -- << --  -- << --  -- << --  -- << -- [COMBO]  -- >> --  -- >> --  -- >> --  -- >> --
 
 function Combo()
 	if not Target then return end
@@ -198,6 +196,8 @@ function Combo()
 
 end 
 
+ -- << --  -- << --  -- << --  -- << -- [HARASS]  -- >> --  -- >> --  -- >> --  -- >> --
+ 
 function Harass1()
 	if not Target then return end
 	
@@ -278,7 +278,7 @@ function Harass2()
 
 end 
 
-
+ -- << --  -- << --  -- << --  -- << -- [KILL STEAL]  -- >> --  -- >> --  -- >> --  -- >> --
 		
 function KS()
 	for i = 1, heroManager.iCount do
@@ -323,8 +323,14 @@ function KS()
 
 end
 
+ -- << --  -- << --  -- << --  -- << -- [Passive]  -- >> --  -- >> --  -- >> --  -- >> --
 
+function PassiveFarm(minion)
+	return getDmg("P", minion, myHero)
+end
 
+ -- << --  -- << --  -- << --  -- << -- [MANA]  -- >> --  -- >> --  -- >> --  -- >> --
+ 
 function mymanaislowerthen(percent)
     if myHero.mana < (myHero.maxMana * ( percent / 100)) then
         return true
@@ -343,6 +349,7 @@ function ManaCost(spell)
 	end
 end			
 
+ -- << --  -- << --  -- << --  -- << -- [DRAWS]  -- >> --  -- >> --  -- >> --  -- >> --
 
 function PluginOnDraw()
 
