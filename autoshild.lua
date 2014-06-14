@@ -1,10 +1,11 @@
 --[[
 Original Scripts:			SpellShields by Barasia283, MSA by http://ps-bol.com/ 
 
-Big Fat Nidalee Edition:	v01
+Big Fat Nidalee Edition:	v02
 
 
 Changelog:					v01		-added menu control panel and integrated MSA
+							v02 fixed chat issues
 
 ]]--
 if myHero.charName ~= "Sivir" 
@@ -17,7 +18,7 @@ then return end
 
 
 function vars()
-	version = "0.01"
+	version = "0.02"
 	
 		Shieldz = {
 		["Sivir"] = _E,
