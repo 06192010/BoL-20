@@ -1,6 +1,6 @@
 
 
-local version = "0.001"
+local version = "0.002"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -56,6 +56,9 @@ function OnTick()
 	
 	OracleCastRange = menu.setrange
 	ReadyCheck()
+	ts:update()
+	Target = ts.target
+	if ValidTarget(Target) then
 	if twitchinvisible == true then 
 		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
 		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
@@ -76,6 +79,8 @@ function OnTick()
 		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
 		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
 
+	end
+	
 	end
 	--and GetDistance(target) <= 400
 		
@@ -134,7 +139,7 @@ end
 
 
 function ReadyCheck()
-
+																																					--3364
 	VisionWard, GreaterVisionTotem, OraclesLens, TwinShadows, TwinShadows2, RengarOracle = GetInventorySlotItem(2043), GetInventorySlotItem(3362), GetInventorySlotItem(3364), GetInventorySlotItem(3023), GetInventorySlotItem(3290), GetInventorySlotItem(3409)
 
 	VisionWardReady = (VisionWard ~= nil and myHero:CanUseSpell(VisionWard) == READY)
@@ -158,6 +163,9 @@ function _Menu()
 	menu:addParam("draworacle", "Draw Oracle Original Range", SCRIPT_PARAM_ONOFF, false)
 	menu:addParam("draworaclecast", "Draw Oracle Cast Range", SCRIPT_PARAM_ONOFF, false)
 	menu:addParam("setrange", "Set Oracle Cast Range", SCRIPT_PARAM_SLICE, 570, 570, 1000)
+	
+	ts = TargetSelector(TARGET_LESS_CAST, 1400, true)
+	ts.name = "Antistealth"
 
 
 end
