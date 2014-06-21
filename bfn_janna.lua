@@ -350,12 +350,12 @@ function OnProcessSpell(unit, spell)
 						Packet("S_CAST", {spellId = _Q, fromX =  spell.startPos.x, fromY = spell.startPos.z, toX =  spell.startPos.x, toY =  spell.startPos.z}):send()
 
 							if JannaMenu.debugmode then
-							PrintChat("casted packets using interrupter")
+							PrintChat("casted packets using Anticapcloser")
 							end
 						else
 						CastSpell(_Q, spell.startPos.x, spell.startPos.z)
 						if JannaMenu.debugmode then
-                        PrintChat("casted normal using interrupter")
+                        PrintChat("casted normal using Anticapcloser")
 						end
 						
 						end
