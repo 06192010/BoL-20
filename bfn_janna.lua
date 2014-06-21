@@ -129,7 +129,6 @@ local ShildSpellsDB = {
 	{charName = "Ezreal", spellName = "EzrealTrueshotBarrage", description = "R", important = 2},
 	{charName = "Graves", spellName = "GravesClusterShot", description = "Q", important = 0},
 	{charName = "Graves", spellName = "GravesChargeShot", description = "R", important = 2},
-	{charName = "Graves", spellName = "GravesChargeShot", description = "R", important = 2},
 	{charName = "Jinx", spellName = "JinxW", description = "W", important = 0},
 	{charName = "Jinx", spellName = "JinxRWrapper", description = "R", important = 2},
 	{charName = "KogMaw", spellName = "KogMawLivingArtillery", description = "R", important = 2},
