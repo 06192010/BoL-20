@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.09"
+local version = "0.10"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -29,63 +29,167 @@ end
 local QRangeMin, QSpeed, QDelay, QWidth = 1075, 910, 0, 200 
 local RRange = 700
 local WRange = 600
+local ERange = 800
 local onHowlingGale = false 
 
-local	ToShildSpells = {}
-local	ShildSpellsDB = 
+local	SpellsTOInterrupt_Anticaplose = {}
+local	SpellsDBInterrupt_Anticaplose = 
 {
-
-	{charName = "FiddleSticks", spellName = "Drain", useult = "no", cap = 0, spellSlot = "W", range = 575, width = 0, speed = math.huge, delay = .5},
-	{charName = "FiddleSticks", spellName = "Crowstorm", useult = "yes", cap = 0, spellSlot = "R", range = 800, width = 600, speed = math.huge, delay = .5},
-    {charName = "MissFortune", spellName = "MissFortuneBulletTime", useult = "yes", cap = 0, spellSlot = "R", range = 1400, width = 100, speed = 775, delay = .5},
-	{charName = "Caitlyn", spellName = "CaitlynAceintheHole", useult = "no", cap = 0, spellSlot = "R", range = 2500, width = 0, speed = 1500, delay = 0},
-    {charName = "Katarina", spellName = "KatarinaR", useult = "yes", cap = 0, spellSlot = "R", range = 550, width = 550, speed = 1450, delay = .5},
-	{charName = "Karthus", spellName = "FallenOne", useult = "yes", cap = 0, spellSlot = "R", range = 20000 , width = 0 , speed = math.huge, delay = 0},
-	{charName = "Malzahar", spellName = "AlZaharNetherGrasp", useult = "yes", cap = 0, spellSlot = "R", range = 700, width = 0, speed = math.huge, delay = .5},
-	{charName = "Galio", spellName = "GalioIdolOfDurand", useult = "yes", cap = 0, spellSlot = "R", range = 560 , width = 560 , speed = math.huge, delay = .5},
-	{charName = "Lucian", spellName = "LucianR", useult = "no", cap = 0, spellSlot = "R", range = 1400, width = 60, speed = math.huge, delay = .5},	
-	{charName = "Shen",  spellName = "ShenStandUnited", useult = "no", cap = 0, spellSlot = "R", range = 25000, width = 0, speed = math.huge, delay = .5},
-	{charName = "Urgot",  spellName = "UrgotSwap2", useult = "no", cap = 0, spellSlot = "R", range = 850, width = 0, speed = 1800, delay = .5},
-	{charName = "Pantheon",  spellName = "PantheonRJump", useult = "no", cap = 0, spellSlot = "R", range = 5500, width = 1000, speed = 3000, delay = 1.0},
-	{charName = "Warwick",  spellName = "InfiniteDuress", useult = "yes", cap = 0, spellSlot = "R", range = 700, width = 0, speed = math.huge, delay = .5},
-	{charName = "Xerath",  spellName = "XerathLocusOfPower2", useult = "yes", cap = 0, spellSlot = "R", range = 5600, width = 200, speed = 500, delay = .75},
-	{charName = "Velkoz",  spellName = "VelkozR", useult = "no", cap = 0, spellSlot = "R", range = 1575, width = 0, speed = 1500},
-	{charName = "Zac",  spellName = "ZacE", useult = "no", cap = 0, spellSlot = "E", range = 1550, width = 250, speed = 1500, delay = .5},
-	{charName = "Twich",  spellName = "HideInShadows", useult = "no", cap = 0, spellSlot = "Q", range = 0, width = 0, speed = math.huge, delay = .5},
-	{charName = "Xerath",  spellName = "XerathArcanopulseChargeUp", useult = "no", cap = 0, spellSlot = "Q", range = 750, width = 100, speed = 500, delay = .75},
-	{charName = "Aatrox", spellName = "AatroxQ", useult = "no", cap = 1, spellSlot = "Q", range = 650, width = 0, speed = 20,  delay = .5},
-	{charName = "Corki", spellName = "CarpetBomb", useult = "no", cap = 1, spellSlot = "W", range = 875, width = 160, speed = 700, delay = 0},
-	{charName = "Diana", spellName = "DianaTeleport", useult = "no", cap = 1, spellSlot = "R", range = 800, width = 0, speed = 1500, delay = .5},
-	{charName = "LeeSin", spellName = "blindmonkqtwo", useult = "no", cap = 1, spellSlot = "Q", range = 0, width = 0, speed = math.huge, delay = .5},
-	{charName = "JarvanIV", spellName = "JarvanIVDragonStrike", useult = "no", cap = 1, spellSlot = "Q", range = 700, width = 70, speed = math.huge, delay = .5},
-	{charName = "Fiora", spellName = "FioraQ", useult = "no", cap = 1, spellSlot = "Q", range = 300 , width = 0, speed = 2200, delay = .5},
-	{charName = "Leblanc", spellName = "LeblancSlide", useult = "no", cap = 1, spellSlot = "W", range = 600, width = 220, speed = math.huge, delay = .5},
-	{charName = "Leblanc", spellName = "leblacslidereturn", useult = "no", cap = 1, spellSlot = "W", range = 0, width = 0, speed = math.huge, delay = .5},
-	{charName = "Fizz", spellName = "FizzPiercingStrike", useult = "no", cap = 1, spellSlot = "Q", range = 550 , width = 0 , speed = math.huge, delay = .5},
-	{charName = "Gragas", spellName = "GragasE", useult = "no", cap = 1, spellSlot = "E", range = 1100 , width = 50 , speed = 1000, delay = .3},
-	{charName = "Irelia", spellName = "IreliaGatotsu", useult = "no", cap = 1, spellSlot = "Q", range = 650 , width = 0 , speed =2200, delay = 0},
-	{charName = "Jax", spellName = "JaxLeapStrike", useult = "no", cap = 1, spellSlot = "Q", range = 210, width = 0, speed = 0, delay = .5},
-    {charName = "Khazix", spellName = "KhazixE", useult = "no", cap = 1, spellSlot = "E", range = 600, width = 300, speed = math.huge, delay = .5},
-    {charName = "Khazix", spellName = "khazixelong", useult = "no", cap = 1, spellSlot = "E", range = 900, width = 300, speed = math.huge, delay = .5},
-	{charName = "Braum", spellName = "BraumW", useult = "no", cap = 1, spellSlot = "W", range = 650, width = 0, speed = 1500, delay = .5},
-    {charName = "Ahri", spellName = "AhriTumble", useult = "no", cap = 1, spellSlot = "R", range = 450, width = 0, speed = 2200, delay = .5},
-	{charName = "Akali", spellName = "AkaliShadowDance", useult = "no", cap = 1, spellSlot = "R", range = 800, width = 0, speed = 2200, delay = 0},
-	{charName = "Caitlyn", spellName = "CaitlynEntrapment", useult = "no", cap = 1, spellSlot = "E", range = 950, width = 80, speed = 2000, delay = .25},
-	{charName = "Pantheon",  spellName = "PantheonW", useult = "no", cap = 1, spellSlot = "W", range = 600, width = 0, speed = math.huge, delay = .5},
-	{charName = "Quinn",  spellName = "QuinnE", useult = "no", cap = 1, spellSlot = "E", range = 700, width = 0, speed = 775, delay = .5},
-	{charName = "Renekton",  spellName = "RenektonSliceAndDice", useult = "no", cap = 1, spellSlot = "E", range = 450, width = 50, speed = 1400, delay = .5},
-	{charName = "Sejuani",  spellName = "SejuaniArcticAssault", useult = "no", cap = 1, spellSlot = "Q", range = 650, width = 75, speed = 1450, delay = .5},
-	{charName = "Shaco",  spellName = "Deceive", useult = "no", cap = 1, spellSlot = "Q", range = 400, width = 0, speed = math.huge, delay = .5},
-	{charName = "Shyvana",  spellName = "ShyvanaTransformCast", useult = "no", cap = 1, spellSlot = "R", range = 1000, width = 160, speed = 700, delay = .5},
-	{charName = "Tryndamere",  spellName = "slashCast", useult = "no", cap = 1, spellSlot = "E", range = 660, width = 225, speed = 700, delay = .5},
-	{charName = "Vi",  spellName = "ViQ", useult = "no", cap = 1, spellSlot = "Q", range = 800, width = 55, speed = 1500, delay = .5},
-	{charName = "XinZhao",  spellName = "XenZhaoSweep", useult = "no", cap = 1, spellSlot = "E", range = 600, width = 120, speed = 1750, delay = .5},
-	{charName = "Yasuo",  spellName = "YasuoDashWrapper", useult = "no", cap = 1, spellSlot = "E", range = 475, width = 0, speed = 20, delay = .5},
-	{charName = "Leona", spellName = "LeonaZenithBlade", useult = "no", cap = 1, spellSlot = "E", range = 900, width = 100, speed = 2000, delay = 0}
-
-
+	-- Interrupter
+	{charName = "FiddleSticks", spellName = "Drain", endposcast = false, useult = "no", cap = 0, spellSlot = "W"},
+	{charName = "FiddleSticks", spellName = "Crowstorm", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+    {charName = "MissFortune", spellName = "MissFortuneBulletTime", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Caitlyn", spellName = "CaitlynAceintheHole", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},
+    {charName = "Katarina", spellName = "KatarinaR", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Karthus", spellName = "FallenOne", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Malzahar", spellName = "AlZaharNetherGrasp", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Galio", spellName = "GalioIdolOfDurand", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Lucian", spellName = "LucianR", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},	
+	{charName = "Shen",  spellName = "ShenStandUnited", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},
+	{charName = "Urgot",  spellName = "UrgotSwap2", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},
+	{charName = "Pantheon",  spellName = "PantheonRJump", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},
+	{charName = "Warwick",  spellName = "InfiniteDuress", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Xerath",  spellName = "XerathLocusOfPower2", endposcast = false, useult = "yes", cap = 0, spellSlot = "R"},
+	{charName = "Velkoz",  spellName = "VelkozR", endposcast = false, useult = "no", cap = 0, spellSlot = "R"},
+	{charName = "Zac",  spellName = "ZacE", endposcast = false, useult = "no", cap = 0, spellSlot = "E"},
+	{charName = "Twitch",  spellName = "HideInShadows", endposcast = false, useult = "no", cap = 0, spellSlot = "Q"},
+	{charName = "Xerath",  spellName = "XerathArcanopulseChargeUp", endposcast = false, useult = "no", cap = 0, spellSlot = "Q"},
+	-- Anticapcloser
+	{charName = "Aatrox", spellName = "AatroxQ", endposcast = true, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Corki", spellName = "CarpetBomb", endposcast = false, useult = "no", cap = 1, spellSlot = "W"},
+	{charName = "Diana", spellName = "DianaTeleport", endposcast = true, useult = "no", cap = 1, spellSlot = "R"},
+	{charName = "LeeSin", spellName = "blindmonkqtwo", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "JarvanIV", spellName = "JarvanIVDragonStrike", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Fiora", spellName = "FioraQ", endposcast = true, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Leblanc", spellName = "LeblancSlide", endposcast = true, useult = "no", cap = 1, spellSlot = "W"},
+	{charName = "Leblanc", spellName = "leblacslidereturn", endposcast = true, useult = "no", cap = 1, spellSlot = "W"},
+	{charName = "Fizz", spellName = "FizzPiercingStrike", endposcast = true, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Gragas", spellName = "GragasE", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Irelia", spellName = "IreliaGatotsu", endposcast = true, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Jax", spellName = "JaxLeapStrike", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
+    {charName = "Khazix", spellName = "KhazixE", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+    {charName = "Khazix", spellName = "khazixelong", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Braum", spellName = "BraumW", endposcast = true, useult = "no", cap = 1, spellSlot = "W"},
+    {charName = "Ahri", spellName = "AhriTumble", endposcast = true, useult = "no", cap = 1, spellSlot = "R"},
+	{charName = "Akali", spellName = "AkaliShadowDance", endposcast = true, useult = "no", cap = 1, spellSlot = "R"},
+	{charName = "Caitlyn", spellName = "CaitlynEntrapment", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Pantheon",  spellName = "PantheonW", endposcast = true, useult = "no", cap = 1, spellSlot = "W"},
+	{charName = "Quinn",  spellName = "QuinnE", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Renekton",  spellName = "RenektonSliceAndDice", endposcast = true, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Sejuani",  spellName = "SejuaniArcticAssault", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Shaco",  spellName = "Deceive", endposcast = true, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "Shyvana",  spellName = "ShyvanaTransformCast", endposcast = false, useult = "no", cap = 1, spellSlot = "R"},
+	{charName = "Tryndamere",  spellName = "slashCast", endposcast = true, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Vi",  spellName = "ViQ", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
+	{charName = "XinZhao",  spellName = "XenZhaoSweep", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Yasuo",  spellName = "YasuoDashWrapper", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Leona", spellName = "LeonaZenithBlade", endposcast = false, useult = "no", cap = 1, spellSlot = "E"}
+	
+	--TwistedFate  Ult
+	-- target spells endpos cast, skillshots startpos cast
+	-- elise spiderform Q, E beim landen
+	-- lissandra endpos E
+	-- nocturne endpos ult
+	-- jayce wenn der anjumpt
+	-- shen taunt
+	-- kennen ult ?
+	-- malp ult beim landen
+	-- thresh 2 q
+	-- alistar endpos w
+	-- nami irgendwas ?
+	-- draven axenspots
+	-- flash endpos
+	-- teleport ankommen und tp, recall, 
+	--morgana ult kein blackshiled
+	--shield ally boost dmg
+	
+	-- test lb!
 
 	}
+	
+	
+local SpellsToShild = {}
+local ShildSpellsDB = {
+	-- Ad Carrys
+	-- important 
+--	0 skillshots mana waste
+--	1 passive, self dmg buffs
+--	2 ulties
+
+	{charName = "Ashe", spellName = "Volley", description = "W", important = 0},
+	{charName = "Caitlyn", spellName = "CaitlynPiltoverPeacemaker", description = "Q", important = 0},
+	{charName = "Caitlyn", spellName = "CaitlynAceintheHole", description = "R", important = 2},
+	{charName = "Corki", spellName = "PhosphorusBomb", description = "Q", important = 0},
+	{charName = "Corki", spellName = "GGun", description = "E", important = 0},
+	{charName = "Corki", spellName = "MissileBarrage", description = "R", important = 2},
+	{charName = "Draven", spellName = "DravenSpinning", description = "Q", important = 0},
+	{charName = "Draven", spellName = "DravenDoubleShot", description = "E", important = 1},
+	{charName = "Draven", spellName = "DravenRCast", description = "R", important = 2},
+	{charName = "Ezreal", spellName = "EzrealMysticShot", description = "Q", important = 0},
+	{charName = "Ezreal", spellName = "EzrealTrueshotBarrage", description = "R", important = 2},
+	{charName = "Graves", spellName = "GravesClusterShot", description = "Q", important = 0},
+	{charName = "Graves", spellName = "GravesChargeShot", description = "R", important = 2},
+	{charName = "Graves", spellName = "GravesChargeShot", description = "R", important = 2},
+	{charName = "Jinx", spellName = "JinxW", description = "W", important = 0},
+	{charName = "Jinx", spellName = "JinxRWrapper", description = "R", important = 2},
+	{charName = "KogMaw", spellName = "KogMawLivingArtillery", description = "R", important = 2},
+	{charName = "Lucian", spellName = "LucianQ", description = "Q", important = 1},
+	{charName = "Lucian", spellName = "LucianW", description = "W", important = 0},
+	{charName = "Lucian", spellName = "LucianR", description = "R", important = 2},
+	{charName = "MissFortune", spellName = "MissFortuneRicochetShot", description = "Q", important = 2},
+	{charName = "MissFortune", spellName = "MissFortuneBulletTime", description = "R", important = 1},
+	{charName = "Quinn", spellName = "QuinnQ", description = "Q", important = 0},
+	{charName = "Quinn", spellName = "QuinnE", description = "E", important = 1},
+	{charName = "Sivir", spellName = "SivirQ", description = "Q", important = 0},
+	{charName = "Sivir", spellName = "SivirW", description = "W", important = 1},
+	{charName = "Tristana", spellName = "RapidFire", description = "Q", important = 1},
+	{charName = "Twitch", spellName = "Expunge", description = "E", important = 2},
+	{charName = "Twitch", spellName = "FullAutomatic", description = "R", important = 2}, -- new ult name ???
+	{charName = "Urgot", spellName = "UrgotHeatseekingMissile", description = "Q", important = 0},
+	{charName = "Urgot", spellName = "UrgotPlasmaGrenade", description = "E", important = 0},
+	{charName = "Varus", spellName = "VarusQ", description = "Q", important = 1},
+	{charName = "Varus", spellName = "VarusE", description = "E", important = 1},
+	{charName = "Vayne", spellName = "VayneTumble", description = "Q", important = 1},
+	{charName = "Vayne", spellName = "VayneCondemn", description = "E", important = 0},
+	{charName = "Vayne", spellName = "VayneInquisition", description = "R", important = 2},
+	{charName = "LeeSin", spellName = "BlindMonkRKick", description = "R", important = 2},
+	{charName = "Nasus", spellName = "NasusQ", description = "Q", important = 2},
+	{charName = "Nocturne", spellName = "NocturneParanoia", description = "R", important = 2},
+	{charName = "Shaco", spellName = "TwoShivPoison", description = "E", important = 1},
+	{charName = "Trundle", spellName = "TrundleTrollSmash", description = "Q", important = 1},
+	{charName = "Vi", spellName = "ViE", description = "E", important = 1},
+	{charName = "XinZhao", spellName = "XenZhaoComboTarget", description = "Q", important = 1},
+	{charName = "Khazix", spellName = "KhazixQ", description = "Q", important = 1},
+	{charName = "Khazix", spellName = "KhazixW", description = "W", important = 1},
+	{charName = "MasterYi", spellName = "AlphaStrike", description = "Q", important = 0},
+	{charName = "MasterYi", spellName = "WujuStyle", description = "E", important = 1},
+	{charName = "Talon", spellName = "TalonNoxianDiplomacy", description = "Q", important = 0},
+	{charName = "Talon", spellName = "TalonShadowAssault", description = "R", important = 2},
+	{charName = "Pantheon", spellName = "PantheonQ", description = "Q", important = 1}, -- mby wrong name
+	{charName = "Yasuo", spellName = "YasuoQW", description = "Q", important = 1}, 
+	{charName = "Zed", spellName = "ZedShuriken", description = "Q", important = 1}, -- mby wrong name
+	{charName = "Zed", spellName = "ZedPBAOEDummy", description = "E", important = 0}, -- mby wrong name
+	{charName = "Aatrox", spellName = "AatroxW", description = "W", important = 0},
+	{charName = "Darius", spellName = "DariusExecute", description = "R", important = 2},
+	{charName = "Gangplank", spellName = "Parley", description = "Q", important = 0},
+	{charName = "Garen", spellName = "GarenQ", description = "Q", important = 1},
+	{charName = "Garen", spellName = "GarenE", description = "E", important = 0},
+	{charName = "Jayce", spellName = "JayceToTheSkies", description = "Q", important = 1},
+	{charName = "Jayce", spellName = "jayceshockblast", description = "2 Q", important = 1},
+	{charName = "Renekton", spellName = "RenektonCleave", description = "Q", important = 1},
+	{charName = "Renekton", spellName = "RenektonPreExecute", description = "W", important = 1},
+	{charName = "Renekton", spellName = "RenektonSliceAndDice", description = "E", important = 1},
+	{charName = "Rengar", spellName = "RengarQ", description = "Q", important = 1},
+	{charName = "Rengar", spellName = "RengarE", description = "E", important = 1},
+	{charName = "Rengar", spellName = "RengarR", description = "R", important = 2},
+	{charName = "Riven", spellName = "RivenFengShuiEngine", description = "R", important = 2},
+	{charName = "Tryndamere", spellName = "UndyingRage", description = "R", important = 2},
+	{charName = "MonkeyKing", spellName = "MonkeyKingDoubleAttack", description = "Q", important = 1},
+	{charName = "MonkeyKing", spellName = "MonkeyKingNimbus", description = "E", important = 1},
+	{charName = "MonkeyKing", spellName = "MonkeyKingSpinToWin", description = "R", important = 2}
+
+
+}
 
 function OnLoad()
 
@@ -115,18 +219,20 @@ function OnLoad()
 	JannaMenu.Draws:addSubMenu("[Q Settings]", "QSettings")
 	JannaMenu.Draws.QSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	JannaMenu.Draws.QSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	JannaMenu.Draws.QSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	JannaMenu.Draws.QSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 90, 0, 360)
 	
 	JannaMenu.Draws:addSubMenu("[W Settings]", "WSettings")
 	JannaMenu.Draws.WSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
 	JannaMenu.Draws.WSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	JannaMenu.Draws.WSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
+	JannaMenu.Draws.WSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 90, 0, 360)
 	
 	JannaMenu.Draws:addParam("UselowfpsDraws","Use low fps Draws", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
-
-
+	
+	
+	JannaMenu:addSubMenu("[Boost Allies Dmg Output]", "BoostAlliesDmgOutput")
+	
 	JannaMenu:addSubMenu("[Interrupter]", "Int")
 	JannaMenu.Int:addParam("interrupterdebug","Interrupter Debug", SCRIPT_PARAM_ONOFF, true)
 	JannaMenu.Int:addParam("info", " ", SCRIPT_PARAM_INFO, "")
@@ -141,17 +247,17 @@ function OnLoad()
 	JannaMenu:addParam("combo","Combo Key", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	JannaMenu:addParam("castq","Spam Q Toggle", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("A"))
 
-	
+	-- interrupter + antigap
 	for i, enemy in ipairs(GetEnemyHeroes()) do
-		for _, champ in pairs(ShildSpellsDB) do
+		for _, champ in pairs(SpellsDBInterrupt_Anticaplose) do
 			if enemy.charName == champ.charName then
-			table.insert(ToShildSpells, {charName = champ.charName, spellSlot = champ.spellSlot, spellName = champ.spellName, useult = champ.useult, cap = champ.cap, spellType = champ.spellType})
+			table.insert(SpellsTOInterrupt_Anticaplose, {charName = champ.charName, spellSlot = champ.spellSlot, spellName = champ.spellName, targetcast = false, useult = champ.useult, cap = champ.cap, spellType = champ.spellType, endposcast = champ.endposcast})
 			end
 		end
 	end
 
-	if #ToShildSpells > 0 then
-		for _, Inter in pairs(ToShildSpells) do
+	if #SpellsTOInterrupt_Anticaplose > 0 then
+		for _, Inter in pairs(SpellsTOInterrupt_Anticaplose) do
 				if Inter.cap == 0 then
 				JannaMenu.Int:addParam(Inter.spellName, ""..Inter.charName.. " | " ..Inter.spellSlot.. " - " ..Inter.spellName, SCRIPT_PARAM_ONOFF, true)
 				if Inter.useult == "no" then
@@ -173,6 +279,30 @@ function OnLoad()
 		end
 
 	end		
+	--
+	--Boost Allies Dmg
+	
+	
+	
+	
+		
+	for i, ally in ipairs(GetAllyHeroes()) do
+		for _, champ in pairs(ShildSpellsDB) do
+			if ally.charName == champ.charName then
+			table.insert(SpellsToShild, {charName = champ.charName, spellName = champ.spellName, description = champ.description, important = champ.important})
+			end
+		end
+	end
+
+	if #SpellsToShild > 0 then
+		for _, Boost in pairs(SpellsToShild) do
+		JannaMenu.BoostAlliesDmgOutput:addParam(Boost.spellName, ""..Boost.charName.. " | " ..Boost.description.. " - " ..Boost.spellName, SCRIPT_PARAM_ONOFF, true)
+		end
+
+	end	
+	--
+	
+	
 	
 	ts = TargetSelector(TARGET_LESS_CAST, 1400, true)
 	ts.name = "JannaMenu"
@@ -216,6 +346,8 @@ function OnTick()
 					end
 				end
 	end
+	
+
 	
 	ts:update()
 	Target = ts.target
@@ -316,8 +448,8 @@ end
 
 function OnProcessSpell(unit, spell)
 
-		if #ToShildSpells > 0 then
-			for _, Inter in pairs(ToShildSpells) do
+		if #SpellsTOInterrupt_Anticaplose > 0 then
+			for _, Inter in pairs(SpellsTOInterrupt_Anticaplose) do
 				if spell.name == Inter.spellName and unit.team ~= myHero.team then
 				-- interupter
 					if JannaMenu.Int[Inter.spellName] and QREADY and ValidTarget(unit, QRangeMin) then
@@ -345,20 +477,39 @@ function OnProcessSpell(unit, spell)
 					-- capcloser
 					if JannaMenu.Anticapcloser[Inter.spellName] and QREADY and ValidTarget(unit, QRangeMin) then
 					if JannaMenu.Anticapcloser.Anticapcloserdebug then PrintChat("Anticapcloser: " ..Inter.spellName) end
-						if JannaMenu.ProdictionSettings.UsePacketsCast then
+					
+						if Inter.endposcast == true then
+							if JannaMenu.ProdictionSettings.UsePacketsCast then
 
-						Packet("S_CAST", {spellId = _Q, fromX =  spell.startPos.x, fromY = spell.startPos.z, toX =  spell.startPos.x, toY =  spell.startPos.z}):send()
+							Packet("S_CAST", {spellId = _Q, fromX =  spell.endPos.x, fromY = spell.endPos.z, toX =  spell.endPos.x, toY = spell.endPos.z}):send()
 
 							if JannaMenu.debugmode then
-							PrintChat("casted packets using Anticapcloser")
+							PrintChat("casted packets using Anticapcloser endpos")
 							end
-						else
-						CastSpell(_Q, spell.startPos.x, spell.startPos.z)
-						if JannaMenu.debugmode then
-                        PrintChat("casted normal using Anticapcloser")
+							else
+							CastSpell(_Q, endPos.x, spell.endPos.z)
+							if JannaMenu.debugmode then
+							PrintChat("casted normal using Anticapcloser endpos")
+							end
+							end
+						elseif Inter.endposcast == false then
+							if JannaMenu.ProdictionSettings.UsePacketsCast then
+
+							Packet("S_CAST", {spellId = _Q, fromX = spell.startPos.x, fromY = spell.startPos.z, toX = spell.startPos.x, toY = spell.startPos.z}):send()
+
+							if JannaMenu.debugmode then
+							PrintChat("casted packets using Anticapcloser startPos")
+							end
+							else
+							CastSpell(_Q, spell.startPos.x, spell.startPos.z)
+							if JannaMenu.debugmode then
+							PrintChat("casted normal using Anticapcloser startPos")
+							end
+							
+							end
 						end
-						
 						end
+
 
 					elseif JannaMenu.Anticapcloser[Inter.spellName..2] and JannaMenu.Anticapcloser[Inter.spellName] and not QREADY and RREADY and ValidTarget(unit, RRange) then
 					if JannaMenu.Anticapcloser.Anticapcloserdebug then PrintChat("Anticapcloser with R: " ..Inter.spellName) end
@@ -370,10 +521,20 @@ function OnProcessSpell(unit, spell)
 
 				end
 			end
+			
+			if #SpellsToShild > 0 then
+			for _, Boost in pairs(SpellsToShild) do
+				if spell.name == Boost.spellName and unit.team == myHero.team then
+					if JannaMenu.BoostAlliesDmgOutput[Boost.spellName] and EREADY and (GetDistance(unit) < ERange) then
+							CastSpell(_E, unit)
+					end
+				end
+			end
+			end
+			
+			
+				--JannaMenu.BoostAlliesDmgOutput:addParam(Boost.spellName, ""..Boost.charName.. " | " ..Boost.description.. " - " ..Boost.spellName, SCRIPT_PARAM_ONOFF, true)
 		end
-		
-	
-end
 
 
 
@@ -523,6 +684,8 @@ end
                         onHowlingGale = true
                 end 
 end
+
+
 end
 
 function OnLoseBuff(unit, buff)
