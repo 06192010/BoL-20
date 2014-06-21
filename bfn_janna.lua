@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.10"
+local version = "0.11"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -250,7 +250,7 @@ function OnLoad()
 	for i, enemy in ipairs(GetEnemyHeroes()) do
 		for _, champ in pairs(SpellsDBInterrupt_Anticaplose) do
 			if enemy.charName == champ.charName then
-			table.insert(SpellsTOInterrupt_Anticaplose, {charName = champ.charName, spellSlot = champ.spellSlot, spellName = champ.spellName, targetcast = false, useult = champ.useult, cap = champ.cap, spellType = champ.spellType, endposcast = champ.endposcast})
+			table.insert(SpellsTOInterrupt_Anticaplose, {charName = champ.charName, spellSlot = champ.spellSlot, spellName = champ.spellName, useult = champ.useult, cap = champ.cap, spellType = champ.spellType, endposcast = champ.endposcast})
 			end
 		end
 	end
@@ -378,7 +378,7 @@ function OnTick()
 
 if JannaMenu.evadee then
 	if _G.Evadeee_impossibleToEvade and EREADY then
-		CastSpell(_E[myHero.charName])
+		CastSpell(_E)
 	end
 end
 
