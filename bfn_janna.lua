@@ -7,7 +7,7 @@ local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.ra
 local UPDATE_FILE_PATH = SCRIPT_PATH.."bfn_janna.lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
 
-function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>BFN Janna:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
+function AutoupdaterMsg(msg) print("<font color=\"#6699ff\"><b>Big Fat Janna:</b></font> <font color=\"#FFFFFF\">"..msg..".</font>") end
 if AUTOUPDATE then
 local ServerData = GetWebResult(UPDATE_HOST, "/BigFatNidalee/BoL/master/versions/bfn_janna.version")
 if ServerData then
@@ -195,7 +195,7 @@ function OnLoad()
            end
        end
 
-	PrintChat("<font color='#c9d7ff'> Big Fat Janna </font><font color='#64f879'> v. "..version.." </font><font color='#c9d7ff'> loaded! </font>")
+	PrintChat("<font color='#c9d7ff'> Big Fat Janna </font><font color='#64f879'> v. "..version.." by Big Fat Nidalee</font><font color='#c9d7ff'> loaded! </font>")
 end
 
 
