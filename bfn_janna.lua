@@ -1,6 +1,6 @@
 if myHero.charName ~= "Janna" then return end
 
-local version = "0.08"
+local version = "0.09"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/BigFatNidalee/BoL/master/bfn_janna.lua".."?rand="..math.random(1,10000)
@@ -80,7 +80,8 @@ local	ShildSpellsDB =
 	{charName = "Tryndamere",  spellName = "slashCast", useult = "no", cap = 1, spellSlot = "E", range = 660, width = 225, speed = 700, delay = .5},
 	{charName = "Vi",  spellName = "ViQ", useult = "no", cap = 1, spellSlot = "Q", range = 800, width = 55, speed = 1500, delay = .5},
 	{charName = "XinZhao",  spellName = "XenZhaoSweep", useult = "no", cap = 1, spellSlot = "E", range = 600, width = 120, speed = 1750, delay = .5},
-	{charName = "Yasuo",  spellName = "YasuoDashWrapper", useult = "no", cap = 1, spellSlot = "E", range = 475, width = 0, speed = 20, delay = .5}
+	{charName = "Yasuo",  spellName = "YasuoDashWrapper", useult = "no", cap = 1, spellSlot = "E", range = 475, width = 0, speed = 20, delay = .5},
+	{charName = "Leona", spellName = "LeonaZenithBlade", useult = "no", cap = 1, spellSlot = "E", range = 900, width = 100, speed = 2000, delay = 0}
 
 
 
@@ -345,12 +346,14 @@ function OnProcessSpell(unit, spell)
 					if JannaMenu.Anticapcloser[Inter.spellName] and QREADY and ValidTarget(unit, QRangeMin) then
 					if JannaMenu.Anticapcloser.Anticapcloserdebug then PrintChat("Anticapcloser: " ..Inter.spellName) end
 						if JannaMenu.ProdictionSettings.UsePacketsCast then
-						Packet("S_CAST", {spellId = _Q, fromX =  unit.x, fromY =  unit.z, toX =  unit.x, toY =  unit.z}):send()
+
+						Packet("S_CAST", {spellId = _Q, fromX =  spell.startPos.x, fromY = spell.startPos.z, toX =  spell.startPos.x, toY =  spell.startPos.z}):send()
+
 							if JannaMenu.debugmode then
 							PrintChat("casted packets using interrupter")
 							end
 						else
-						CastSpell(_Q, unit.x, unit.z)
+						CastSpell(_Q, spell.startPos.x, spell.startPos.z)
 						if JannaMenu.debugmode then
                         PrintChat("casted normal using interrupter")
 						end
