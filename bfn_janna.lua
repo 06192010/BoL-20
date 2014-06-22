@@ -82,7 +82,7 @@ local	SpellsDBInterrupt_Anticaplose =
 	{charName = "Tryndamere",  spellName = "slashCast", endposcast = true, useult = "no", cap = 1, spellSlot = "E"},
 	{charName = "Vi",  spellName = "ViQ", endposcast = false, useult = "no", cap = 1, spellSlot = "Q"},
 	{charName = "XinZhao",  spellName = "XenZhaoSweep", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
-	{charName = "Yasuo",  spellName = "YasuoDashWrapper", endposcast = false, useult = "no", cap = 1, spellSlot = "E"},
+	{charName = "Yasuo",  spellName = "YasuoDashWrapper", endposcast = true, useult = "no", cap = 1, spellSlot = "E"},
 	{charName = "Leona", spellName = "LeonaZenithBlade", endposcast = false, useult = "no", cap = 1, spellSlot = "E"}
 	
 	--TwistedFate  Ult
