@@ -1,6 +1,4 @@
-
-
-local version = "0.002"
+local version = "0.003"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -58,30 +56,6 @@ function OnTick()
 	ReadyCheck()
 	ts:update()
 	Target = ts.target
-	if ValidTarget(Target) then
-	if twitchinvisible == true then 
-		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
-		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
-
-	end
-	
-	if akaliinvisible == true then 
-		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
-		if RengarOracleReady and GetDistance(unit) <= menu.setrange  then CastSpell(RengarOracle) end 
-
-	end	
-	if teemoinvisible == true then 
-		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
-		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
-
-	end
-	if vayneinvisible == true then 
-		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
-		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
-
-	end
-	
-	end
 	--and GetDistance(target) <= 400
 		
 end 
@@ -100,6 +74,29 @@ function OnGainBuff(unit, buff)
 	if buff.name == "vaynetumblefade" and GetDistance(unit) <= menu.setrange and unit.team ~= myHero.team then
 		vayneinvisible = true
 	end	
+	
+	if twitchinvisible == true then 
+		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
+		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
+
+	end
+	
+	if akaliinvisible == true then 
+		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
+		if RengarOracleReady and GetDistance(unit) <= menu.setrange  then CastSpell(RengarOracle) end 
+
+	end	
+	
+	if teemoinvisible == true then 
+		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
+		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
+
+	end
+	if vayneinvisible == true then 
+		if OraclesLensReady and GetDistance(unit) <= menu.setrange then CastSpell(OraclesLens) end 
+		if RengarOracleReady and GetDistance(unit) <= menu.setrange then CastSpell(RengarOracle) end 
+
+	end
 end
 
 
