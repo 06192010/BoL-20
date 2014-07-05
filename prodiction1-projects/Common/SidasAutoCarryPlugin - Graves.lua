@@ -1,6 +1,6 @@
 if myHero.charName ~= "Graves" then return end
 
-local version = "0.05"
+local version = "0.06"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -33,6 +33,7 @@ local AArange = 610
 local QRange, QSpeed, QDelay, QWidth = 925, 1950, 0.265, 85
 local WRange, WSpeed, WDelay, WWidth = 925, 1650, 0.300, 250
 local RRange, RSpeed, RDelay, RWidth, RWidth2 = 1000, 2100, 0.219, 55, 100
+local ksfilter = false
 
 --local QRange, QSpeed, QDelay, QWidth = 920, 902, 0.250, 110
 --local WRange, WSpeed, WDelay, WWidth = 900, 1650, 0.250, 250
@@ -49,7 +50,7 @@ function PluginOnLoad()
 
 
 	require "Collision"
-	require "Prodiction1"
+	require "Prodiction"
 
 	
 	AutoCarry.PluginMenu:addSubMenu("[Harass]", "Harass")
@@ -66,12 +67,6 @@ function PluginOnLoad()
 	
 	AutoCarry.PluginMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
 	AutoCarry.PluginMenu.ProdictionSettings:addParam("UsePacketsCast","Use Packets Cast", SCRIPT_PARAM_ONOFF, true)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("info", "~=[ Callbacks ]=~", SCRIPT_PARAM_INFO, "")
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, false)
 	
 	AutoCarry.PluginMenu:addSubMenu("[KS Options]", "KSOptions")
 
@@ -79,33 +74,6 @@ function PluginOnLoad()
 	AutoCarry.PluginMenu.KSOptions:addParam("KSwithW","KS with W", SCRIPT_PARAM_ONOFF, true)
 	AutoCarry.PluginMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 	
-	AutoCarry.PluginMenu:addSubMenu("[Draws]", "Draws")
-	AutoCarry.PluginMenu.Draws:addSubMenu("[AA Settings]", "AASettings")
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	AutoCarry.PluginMenu.Draws:addSubMenu("[Q Settings]", "QSettings")
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	AutoCarry.PluginMenu.Draws:addSubMenu("[W Settings]", "WSettings")
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	AutoCarry.PluginMenu.Draws:addSubMenu("[E Settings]", "ESettings")
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	AutoCarry.PluginMenu.Draws:addSubMenu("[R Settings]", "RSettings")
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	AutoCarry.PluginMenu.Draws:addParam("DrawAARange","Draw AA Range", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawERange","Draw E Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawRRange","Draw R Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("UselowfpsDraws","Use low fps Draws", SCRIPT_PARAM_ONOFF, true)
 	
 	AutoCarry.PluginMenu:addParam("info", "~=[ BFN Graves v"..version.." ]=~", SCRIPT_PARAM_INFO, "")
 
@@ -130,11 +98,11 @@ function PluginOnTick()
 	WReady = (myHero:CanUseSpell(_W) == READY)
 	EReady = (myHero:CanUseSpell(_E) == READY)
 	RReady = (myHero:CanUseSpell(_R) == READY)
-
-	if Target and AutoCarry.MainMenu.AutoCarry then WQ() end
-	if Target and AutoCarry.MainMenu.MixedMode then WQHarass1() end
-	if Target and AutoCarry.MainMenu.LaneClear then WQHarass2() end
 	KS()
+	if Target and AutoCarry.MainMenu.AutoCarry and not ksfilter == true then WQ() end
+	if Target and AutoCarry.MainMenu.MixedMode and not ksfilter == true then WQHarass1() end
+	if Target and AutoCarry.MainMenu.LaneClear and not ksfilter == true then WQHarass2() end
+
 	
 
 
@@ -149,13 +117,16 @@ function KS()
 		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
 			CastSpell(_Q, qpos.x, qpos.z)
 			end
+			
+		ksfilter = true 
 		end	
+		else ksfilter = false
 		end
 --
 		if WReady and AutoCarry.PluginMenu.KSOptions.KSwithW and ValidTarget(enemy, WRange) and enemy.health < getDmg("W",enemy,myHero)  then
@@ -166,20 +137,47 @@ function KS()
 			else 
 			CastSpell(_W, epos.x, epos.z)
 			end
+		ksfilter = true 
 		end	
+		else ksfilter = false
 		end
 --	
 		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
 		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local Rcoll = Collision(RRange, RSpeed, RDelay, RWidth2)
 		
-		if rpos and rinfo.hitchance >= 3 and not Rcoll:GetMinionCollision(rpos, myHero) then
+		if rpos and rinfo.hitchance >= 1 and not Rcoll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
 			else 
 			CastSpell(_R, rpos.x, rpos.z)
 			end
+		ksfilter = true 
 		end	
+		else ksfilter = false
+		end
+--
+--	
+		if QReady and RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and enemy.health < getDmg("R",enemy,myHero) + getDmg("Q",enemy,myHero)  and myHero.mana >= ManaCost(QR) then
+		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
+		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
+		local Rcoll = Collision(RRange, RSpeed, RDelay, RWidth2)
+		
+		if rpos and qpos and rinfo.hitchance >= 1 and not Rcoll:GetMinionCollision(rpos, myHero) then
+		
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
+			else 
+			CastSpell(_Q, qpos.x, qpos.z)
+			end
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
+			else 
+			CastSpell(_R, rpos.x, rpos.z)
+			end
+		ksfilter = true 
+		end	
+		else ksfilter = false
 		end
 --
 	end
@@ -193,7 +191,7 @@ function WQ ()
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
 		
-		if wpos and winfo.hitchance >= 2 then
+		if wpos and winfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _W, toX = wpos.x, toY = wpos.z, fromX = wpos.x, fromY = wpos.z}):send(true)
 			else 
@@ -201,7 +199,7 @@ function WQ ()
 			end
 		end	
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -215,7 +213,7 @@ function WQ ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -228,7 +226,7 @@ function WQ ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -246,7 +244,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if wpos and winfo.hitchance >= 2 then
+		if wpos and winfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _W, toX = wpos.x, toY = wpos.z, fromX = wpos.x, fromY = wpos.z}):send(true)
 			else 
@@ -255,7 +253,7 @@ function WQHarass1 ()
 		end	
 		
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -268,7 +266,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -281,7 +279,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -292,7 +290,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -302,7 +300,7 @@ function WQHarass1 ()
 	elseif AutoCarry.PluginMenu.Harass.Harass1UseW and not AutoCarry.PluginMenu.Harass.Harass1UseQ and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass1) and WReady and myHero.mana >= ManaCost(W) and GetDistance(Target) <= WRange then
 		local wpos, winfo = Prodiction.GetPrediction(Target, WRange, WSpeed, WDelay, WWidth, myPlayer)
 		
-		if wpos and winfo.hitchance >= 2 then
+		if wpos and winfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _W, toX = wpos.x, toY = wpos.z, fromX = wpos.x, fromY = wpos.z}):send(true)
 			else 
@@ -320,7 +318,7 @@ function WQHarass2 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if wpos and winfo.hitchance >= 2 then
+		if wpos and winfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _W, toX = wpos.x, toY = wpos.z, fromX = wpos.x, fromY = wpos.z}):send(true)
 			else 
@@ -328,7 +326,7 @@ function WQHarass2 ()
 			end
 		end	
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -342,7 +340,7 @@ function WQHarass2 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -355,7 +353,7 @@ function WQHarass2 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -366,7 +364,7 @@ function WQHarass2 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		-- local Qcoll = Collision(QRange, QSpeed, QDelay, QWidth)
 		
-		if qpos and qinfo.hitchance >= 2 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
+		if qpos and qinfo.hitchance >= 1 then -- and not Qcoll:GetMinionCollision(qpos, myHero)
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -376,7 +374,7 @@ function WQHarass2 ()
 	elseif AutoCarry.PluginMenu.Harass.Harass2UseW and not AutoCarry.PluginMenu.Harass.Harass2UseQ and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2) and WReady and myHero.mana >= ManaCost(W) and GetDistance(Target) <= WRange then
 		local wpos, winfo = Prodiction.GetPrediction(Target, WRange, WSpeed, WDelay, WWidth, myPlayer)
 		
-		if wpos and winfo.hitchance >= 2 then
+		if wpos and winfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _W, toX = wpos.x, toY = wpos.z, fromX = wpos.x, fromY = wpos.z}):send(true)
 			else 
@@ -403,187 +401,10 @@ function ManaCost(spell)
 		return 65 + (5 * myHero:GetSpellData(_W).level)
 	elseif spell == R then
 		return 100
+	elseif spell == QR then
+		return 50 + (10 * myHero:GetSpellData(_Q).level) + 100
 	elseif spell == WQ then
 		return 65 + (5 * myHero:GetSpellData(_W).level) + 50 + (10 * myHero:GetSpellData(_Q).level)
 	end 
 end			
 
-
-function PluginOnDraw()
-
-
-	if AutoCarry.PluginMenu.Draws.UselowfpsDraws and not myHero.dead then
-		lowfpsdraws()
-	end
-	
-	if not AutoCarry.PluginMenu.Draws.UselowfpsDraws then
-	if AutoCarry.PluginMenu.Draws.DrawAARange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, AArange, 0xb9c3ed)
-	end
-	if QReady and AutoCarry.PluginMenu.Draws.DrawQRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRange, 0xb9c3ed)
-	end 
-	if WReady and AutoCarry.PluginMenu.Draws.DrawWRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, WRange, 0xb9c3ed)
-	end 
-	if EReady and AutoCarry.PluginMenu.Draws.DrawERange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, ERange, 0xb9c3ed)
-	end 
-	if RReady and AutoCarry.PluginMenu.Draws.DrawRRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, RRange, 0xb9c3ed)
-	end 
-	end 
-end 
-
-
-
-function lowfpsdraws()
-
-	if AutoCarry.PluginMenu.Draws.DrawAARange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, AArange, ARGB(AutoCarry.PluginMenu.Draws.AASettings.colorAA[1],AutoCarry.PluginMenu.Draws.AASettings.colorAA[2],AutoCarry.PluginMenu.Draws.AASettings.colorAA[3],AutoCarry.PluginMenu.Draws.AASettings.colorAA[4]))
-	end
-	
-	if QReady and AutoCarry.PluginMenu.Draws.DrawQRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, QRange, ARGB(AutoCarry.PluginMenu.Draws.QSettings.colorAA[1],AutoCarry.PluginMenu.Draws.QSettings.colorAA[2],AutoCarry.PluginMenu.Draws.QSettings.colorAA[3],AutoCarry.PluginMenu.Draws.QSettings.colorAA[4]))
-	end	
-	if WReady and AutoCarry.PluginMenu.Draws.DrawWRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, WRange, ARGB(AutoCarry.PluginMenu.Draws.WSettings.colorAA[1],AutoCarry.PluginMenu.Draws.WSettings.colorAA[2],AutoCarry.PluginMenu.Draws.WSettings.colorAA[3],AutoCarry.PluginMenu.Draws.WSettings.colorAA[4]))
-	end	
-	if EReady and AutoCarry.PluginMenu.Draws.DrawERange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, ERange, ARGB(AutoCarry.PluginMenu.Draws.ESettings.colorAA[1],AutoCarry.PluginMenu.Draws.ESettings.colorAA[2],AutoCarry.PluginMenu.Draws.ESettings.colorAA[3],AutoCarry.PluginMenu.Draws.ESettings.colorAA[4]))
-	end	
-	if RReady and AutoCarry.PluginMenu.Draws.DrawRRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, RRange, ARGB(AutoCarry.PluginMenu.Draws.RSettings.colorAA[1],AutoCarry.PluginMenu.Draws.RSettings.colorAA[2],AutoCarry.PluginMenu.Draws.RSettings.colorAA[3],AutoCarry.PluginMenu.Draws.RSettings.colorAA[4]))
-	end
-
-
-end
-
-
---AA Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.AASettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---AA Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.AASettings.width, color, 75)	
-	end
-end 
-
---Q Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.QSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---Q Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.QSettings.width, color, 75)	
-	end
-end 	
-
---W Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.WSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---W Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.WSettings.width, color, 75)	
-	end
-end 	
---E Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.ESettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---E Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.ESettings.width, color, 75)	
-	end
-end 	
---R Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.RSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---R Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.RSettings.width, color, 75)	
-	end
-end 		
