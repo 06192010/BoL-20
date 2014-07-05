@@ -29,7 +29,6 @@ end
 
 local Target = AutoCarry.GetAttackTarget()
 local QReady, WReady, EReady, RReady = false, false, false, false
-local AArange = 610
 local QRange, QSpeed, QDelay, QWidth = 925, 1950, 0.265, 85
 local WRange, WSpeed, WDelay, WWidth = 925, 1650, 0.300, 250
 local RRange, RSpeed, RDelay, RWidth, RWidth2 = 1000, 2100, 0.219, 55, 100
