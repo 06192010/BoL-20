@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.05"
+local version = "0.06"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -31,33 +31,16 @@ local Target = AutoCarry.GetAttackTarget()
 local QReady, WReady, EReady, RReady = false, false, false, false
 local QRange, QSpeed, QDelay, QWidth = 825, 850, 0.5, 250
 local WRange = 800
-local AArange = 525
 local ERange, ESpeed, EDelay, EWidth = 730, 902, 0.5, 100
 local RRange, RSpeed, RDelay, RWidth = 1225, 2000, 0.165, 80
---local RRange2, RSpeed2, RDelay2, RWidth2 = 1500, 2000, 0.165, unknown
+local ksfilter = false
 
--- q 825, ?, -0.5, radius 250
--- e 600, 902, -0.5, 100
--- r 1225, 828.5, 	-0.5,  40
-
---  HITCHANCE:   BLOCKED = 0   LOW = 1  NORMAL = 2  HIGH = 3  VERY_HIGH = 4
---	AutoCarry.MainMenu.MixedMode
---	AutoCarry.MainMenu.LastHit
---	AutoCarry.MainMenu.LaneClear
-
--- TIME LEFT
-local IEid = 3031
-local BOTkRid = 3153
-local iebought = 1
-local BOTkRdmg = 0
-local Lethality = 1
---
 
 function PluginOnLoad()
 
 
 	require "Collision"
-	require "Prodiction1"
+	require "Prodiction"
 
 	
 	AutoCarry.PluginMenu:addSubMenu("[Combo]", "Combo")
@@ -70,69 +53,23 @@ function PluginOnLoad()
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseQ","Use Q", SCRIPT_PARAM_ONOFF, true)
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseE","Use E", SCRIPT_PARAM_ONOFF, false)
     AutoCarry.PluginMenu.Harass:addParam("Harass1UseR","Use R", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
+	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass1", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 55, 0, 100, 0)
 	
 	AutoCarry.PluginMenu.Harass:addParam("info", "~=[ Harass Lane Clear ]=~", SCRIPT_PARAM_INFO, "")
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseQ","Use Q", SCRIPT_PARAM_ONOFF, true)
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseE","Use E", SCRIPT_PARAM_ONOFF, false)
     AutoCarry.PluginMenu.Harass:addParam("Harass2UseR","Use R", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 50, 0, 100, 0)
+	AutoCarry.PluginMenu.Harass:addParam("ManaSliderHarass2", "Min mana to use skills",   SCRIPT_PARAM_SLICE, 55, 0, 100, 0)
 	
 	
 	AutoCarry.PluginMenu:addSubMenu("[Prodiction Settings]", "ProdictionSettings")
 	AutoCarry.PluginMenu.ProdictionSettings:addParam("UsePacketsCast","Use Packets Cast", SCRIPT_PARAM_ONOFF, true)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("info", "~=[ Callbacks ]=~", SCRIPT_PARAM_INFO, "")
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("info", "~=[ IT DOESNT WORK NOW ]=~", SCRIPT_PARAM_INFO, "")
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("OnDash","OnDash", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("AfterDash","AfterDash", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("OnImmobile","OnImmobile", SCRIPT_PARAM_ONOFF, false)
---	AutoCarry.PluginMenu.ProdictionSettings:addParam("AfterImmobile","AfterImmobile", SCRIPT_PARAM_ONOFF, false)
 	
 	AutoCarry.PluginMenu:addSubMenu("[KS Options]", "KSOptions")
 
 	AutoCarry.PluginMenu.KSOptions:addParam("KSwithQ","KS with Q", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.KSOptions:addParam("KSwithE","KS with E", SCRIPT_PARAM_ONOFF, true)
 	AutoCarry.PluginMenu.KSOptions:addParam("KSwithR","KS with R", SCRIPT_PARAM_ONOFF, true)
 	
-	AutoCarry.PluginMenu:addSubMenu("[Draws]", "Draws")
-	
-	AutoCarry.PluginMenu.Draws:addSubMenu("[Estimated Time]", "EstimatedTime")
-	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("drawaa", "Draw time to kill", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("usecrits", "Use crits at calculations", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("autos", "Estimate AAs to kill", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws.EstimatedTime:addParam("lethality", "Lethality Points", SCRIPT_PARAM_SLICE, 0, 0, 2, 0)
-
-	AutoCarry.PluginMenu.Draws:addSubMenu("[AA Settings]", "AASettings")
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.AASettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	
-	AutoCarry.PluginMenu.Draws:addSubMenu("[Q Settings]", "QSettings")
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.QSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	
-	AutoCarry.PluginMenu.Draws:addSubMenu("[W Settings]", "WSettings")
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.WSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	
-	AutoCarry.PluginMenu.Draws:addSubMenu("[E Settings]", "ESettings")
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.ESettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	
-	AutoCarry.PluginMenu.Draws:addSubMenu("[R Settings]", "RSettings")
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("colorAA", "Circle Color", SCRIPT_PARAM_COLOR, {255, 0, 255, 0})
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("width", "Circle Width", SCRIPT_PARAM_SLICE, 1, 1, 5)
-	AutoCarry.PluginMenu.Draws.RSettings:addParam("quality", "Circle Quality", SCRIPT_PARAM_SLICE, 0, 0, 360)
-	
-	AutoCarry.PluginMenu.Draws:addParam("DrawAARange","Draw AA Range", SCRIPT_PARAM_ONOFF, true)
-	AutoCarry.PluginMenu.Draws:addParam("DrawQRange","Draw Q Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawWRange","Draw W Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawERange","Draw E Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("DrawRRange","Draw R Range", SCRIPT_PARAM_ONOFF, false)
-	AutoCarry.PluginMenu.Draws:addParam("UselowfpsDraws","Use low fps Draws", SCRIPT_PARAM_ONOFF, true)
 	
 	AutoCarry.PluginMenu:addParam("info", "~=[ BFN Corki v"..version.." ]=~", SCRIPT_PARAM_INFO, "")
 
@@ -147,10 +84,8 @@ function PluginOnLoad()
 	end
 	
 	
-		
 	
-	
-	PrintChat("<font color='#c9d7ff'> BFN Corki </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
+	PrintChat("<font color='#c9d7ff'> BigFatNidalee's Corki: </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
 
 
 
@@ -163,22 +98,98 @@ function PluginOnTick()
 	WReady = (myHero:CanUseSpell(_W) == READY)
 	EReady = (myHero:CanUseSpell(_E) == READY)
 	RReady = (myHero:CanUseSpell(_R) == READY)
-
-	if Target and AutoCarry.MainMenu.AutoCarry then Combo() end
-	if Target and AutoCarry.MainMenu.MixedMode then Harass1() end
-	if Target and AutoCarry.MainMenu.LaneClear then Harass2() end
 	KS()
+	if Target and AutoCarry.MainMenu.AutoCarry and not ksfilter == true then Combo() end
+	if Target and AutoCarry.MainMenu.MixedMode and not ksfilter == true then Harass1() end
+	if Target and AutoCarry.MainMenu.LaneClear and not ksfilter == true then Harass2() end
 	
+
 	
-	-- TIME LEFT
-	if myHero.range < 350 then
-		Lethality = 1 + 0.1*AutoCarry.PluginMenu.Draws.EstimatedTime.lethality
-	else
-		Lethality = 1 + 0.05*AutoCarry.PluginMenu.Draws.EstimatedTime.lethality
-	end
-	--
+
 
 end 
+
+ -- << --  -- << --  -- << --  -- << -- [KS]  -- >> --  -- >> --  -- >> --  -- >> --
+ 
+function KS()
+	for i = 1, heroManager.iCount do
+	local enemy = heroManager:getHero(i)
+--	
+		if QReady and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and not enemy.dead and enemy.health < getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(Q) then
+		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
+		
+		if qpos and qinfo.hitchance >= 1 then
+			
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
+			else 
+			CastSpell(_Q, qpos.x, qpos.z)
+			end
+			
+		ksfilter = true 
+		
+		end	
+		else ksfilter = false
+		end
+		
+
+--
+		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and not enemy.dead and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
+		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
+		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
+		
+		if rpos and rinfo.hitchance >= 1 and not coll:GetMinionCollision(rpos, myHero) then
+
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
+			else 
+			CastSpell(_R, rpos.x, rpos.z)
+			end
+			
+		ksfilter = true 
+		
+		end	
+		else ksfilter = false
+		end
+--
+--
+		if RReady and QReady and AutoCarry.PluginMenu.KSOptions.KSwithR and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and not enemy.dead and enemy.health < getDmg("R",enemy,myHero) + getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(R) then
+		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
+		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
+		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
+		
+		if rpos and qpos and qinfo.hitchance >= 1 and not coll:GetMinionCollision(rpos, myHero) then
+
+			
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
+			else 
+			CastSpell(_Q, qpos.x, qpos.z)
+			end
+			
+			
+			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
+				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
+			else 
+			CastSpell(_R, rpos.x, rpos.z)
+			end
+			
+		ksfilter = true 
+		
+		end	
+		else ksfilter = false
+		end
+--
+
+	end
+
+end
+
+ -- << --  -- << --  -- << --  -- << -- [Passive]  -- >> --  -- >> --  -- >> --  -- >> --
+
+function PassiveFarm(minion)
+	return getDmg("P", minion, myHero)
+end
 
 
  -- << --  -- << --  -- << --  -- << -- [COMBO]  -- >> --  -- >> --  -- >> --  -- >> --
@@ -189,7 +200,7 @@ function Combo()
 	if AutoCarry.PluginMenu.Combo.UseQ and QReady and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 2 then
+		if qpos and qinfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -197,7 +208,7 @@ function Combo()
 			end
 		end			
 	end 	
-	if AutoCarry.PluginMenu.Combo.UseE and EReady  and GetDistance(Target) <= ERange then
+	if AutoCarry.PluginMenu.Combo.UseE and EReady and myHero.mana >= ManaCost(E) and GetDistance(Target) <= ERange then
 		local epos, einfo = Prodiction.GetPrediction(Target, ERange, ESpeed, EDelay, EWidth, myPlayer)
 		
 		if epos and einfo.hitchance >= 1 then
@@ -212,7 +223,7 @@ function Combo()
 		local rpos, rinfo = Prodiction.GetPrediction(Target, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
 		
-		if rpos and rinfo.hitchance >= 3 and not coll:GetMinionCollision(rpos, myHero) then
+		if rpos and rinfo.hitchance >= 1 and not coll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
 			else 
@@ -231,7 +242,7 @@ function Harass1()
 	if AutoCarry.PluginMenu.Harass.Harass1UseQ and QReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass1) and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 2 then
+		if qpos and qinfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -254,7 +265,7 @@ function Harass1()
 		local rpos, rinfo = Prodiction.GetPrediction(Target, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
 		
-		if rpos and rinfo.hitchance >= 3 and not coll:GetMinionCollision(rpos, myHero) then
+		if rpos and rinfo.hitchance >= 1 and not coll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
 			else 
@@ -271,7 +282,7 @@ function Harass2()
 	if AutoCarry.PluginMenu.Harass.Harass2UseQ and QReady and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2) and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 2 then
+		if qpos and qinfo.hitchance >= 1 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -294,7 +305,7 @@ function Harass2()
 		local rpos, rinfo = Prodiction.GetPrediction(Target, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
 		
-		if rpos and rinfo.hitchance >= 3 and not coll:GetMinionCollision(rpos, myHero) then
+		if rpos and rinfo.hitchance >= 1 and not coll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
 			else 
@@ -305,82 +316,8 @@ function Harass2()
 
 end 
 
- -- << --  -- << --  -- << --  -- << -- [KILL STEAL]  -- >> --  -- >> --  -- >> --  -- >> --
-		
-function KS()
-	for i = 1, heroManager.iCount do
-	local enemy = heroManager:getHero(i)
---	
-		if QReady and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and not enemy.dead and enemy.health < getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(Q) then
-		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
-		if qpos and qinfo.hitchance >= 2 then
-			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
-			else 
-			CastSpell(_Q, qpos.x, qpos.z)
-			end
-		end	
-		end
---
-		if EReady and AutoCarry.PluginMenu.KSOptions.KSwithE and ValidTarget(enemy, ERange) and not enemy.dead and enemy.health < getDmg("E",enemy,myHero)  then
-		local epos, einfo = Prodiction.GetPrediction(enemy, ERange, ESpeed, EDelay, EWidth, myPlayer)
-		if epos and einfo.hitchance >= 1 then
-			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _E, toX = epos.x, toY = epos.z, fromX = epos.x, fromY = epos.z}):send(true)
-			else 
-			CastSpell(_E, epos.x, epos.z)
-			end
-		end	
-		end
---	
-		if RReady and AutoCarry.PluginMenu.KSOptions.KSwithR and ValidTarget(enemy, RRange) and not enemy.dead and enemy.health < getDmg("R",enemy,myHero) and myHero.mana >= ManaCost(R) then
-		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
-		local coll = Collision(RRange, RSpeed, RDelay, RWidth)
-		
-		if rpos and rinfo.hitchance >= 3 and not coll:GetMinionCollision(rpos, myHero) then
-			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
-				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
-			else 
-			CastSpell(_R, rpos.x, rpos.z)
-			end
-		end	
-		end
---
-	end
 
-end
- -- << --  -- << --  -- << --  -- << -- [TIME LEFT]  -- >> --  -- >> --  -- >> --  -- >> --
-function DPS(Enemy)
-	return Enemy.health/ (myHero:CalcDamage(Enemy, myHero.totalDamage) * myHero.attackSpeed)
-end
-
-function CRIT(Enemy)
-	if GetInventorySlotItem(IEid) ~=nil then
-		iebought = 1.5
-	else
-		iebought = 1
-	end
-	
-	if GetInventorySlotItem(BOTkRid) ~=nil then
-		BOTkRdmg = myHero:CalcDamage(Enemy, (Enemy.health)*0.05)
-	else
-		BOTkRdmg = 0
-	end
-	
-
-	CorkiPassive = getDmg("P", Enemy, myHero)
-
-	
-	return Enemy.health/ ((myHero:CalcDamage(Enemy, myHero.totalDamage) + (Lethality*iebought*myHero:CalcDamage(Enemy, myHero.totalDamage)*myHero.critChance) + BOTkRdmg + CorkiPassive) * myHero.attackSpeed)
-end
-
- -- << --  -- << --  -- << --  -- << -- [Passive]  -- >> --  -- >> --  -- >> --  -- >> --
-
-function PassiveFarm(minion)
-	return getDmg("P", minion, myHero)
-end
-
- -- << --  -- << --  -- << --  -- << -- [MANA]  -- >> --  -- >> --  -- >> --  -- >> --
+-- << --  -- << --  -- << --  -- << -- [MANA]  -- >> --  -- >> --  -- >> --  -- >> --
  
 function mymanaislowerthen(percent)
     if myHero.mana < (myHero.maxMana * ( percent / 100)) then
@@ -395,204 +332,11 @@ function ManaCost(spell)
 		return 50 + (10 * myHero:GetSpellData(_Q).level)
 	elseif spell == E then
 		return 50
+	elseif spell == QR then
+		return 50 + (10 * myHero:GetSpellData(_Q).level) + 20
 	elseif spell == R then
 		return 20
 	end
 end			
 
- -- << --  -- << --  -- << --  -- << -- [DRAWS]  -- >> --  -- >> --  -- >> --  -- >> --
 
-function PluginOnDraw()
-	-- TIME LEFT
-		for _, Enemy in pairs(GetEnemyHeroes()) do
-        if ValidTarget(Enemy) and Enemy.visible and AutoCarry.PluginMenu.Draws.EstimatedTime.drawaa then
-			local timetokill
-			if AutoCarry.PluginMenu.Draws.EstimatedTime.usecrits then
-				timetokill = string.format("%4.1f", CRIT(Enemy)) .. "s to dead"
-				DrawText3D(tostring(timetokill), Enemy.x, Enemy.y, Enemy.z, 20, RGB(255, 255, 255), true)
-			else
-				timetokill = string.format("%4.1f", DPS(Enemy)) .. "s to dead"
-				DrawText3D(tostring(timetokill), Enemy.x, Enemy.y, Enemy.z, 20, RGB(255, 255, 255), true)
-			end
-			if AutoCarry.PluginMenu.Draws.EstimatedTime.autos then
-				autostokill = "AAs to kill:" .. string.format("%4.0f", 1+(Enemy.health/(myHero:CalcDamage(Enemy, myHero.totalDamage) + CorkiPassive + BOTkRdmg + (Lethality*iebought*myHero:CalcDamage(Enemy, myHero.totalDamage)*myHero.critChance))))
-				DrawText3D(tostring(autostokill), Enemy.x+10, Enemy.y, Enemy.z+65, 20, RGB(255, 255, 255), true)
-			end
-        end
-    end
-	--
-	if AutoCarry.PluginMenu.Draws.UselowfpsDraws and not myHero.dead then
-		lowfpsdraws()
-	end
-	
-	if not AutoCarry.PluginMenu.Draws.UselowfpsDraws then
-	if AutoCarry.PluginMenu.Draws.DrawAARange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, AArange, 0xb9c3ed)
-	end
-	if QReady and AutoCarry.PluginMenu.Draws.DrawQRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, QRange, 0xb9c3ed)
-	end 
-	if WReady and AutoCarry.PluginMenu.Draws.DrawWRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, WRange, 0xb9c3ed)
-	end 
-	if EReady and AutoCarry.PluginMenu.Draws.DrawERange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, ERange, 0xb9c3ed)
-	end 
-	if RReady and AutoCarry.PluginMenu.Draws.DrawRRange and not myHero.dead then
-		DrawCircle(myHero.x, myHero.y, myHero.z, RRange, 0xb9c3ed)
-	end 
-	end 
-end 
-
-
-
-function lowfpsdraws()
-
-	if AutoCarry.PluginMenu.Draws.DrawAARange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, AArange, ARGB(AutoCarry.PluginMenu.Draws.AASettings.colorAA[1],AutoCarry.PluginMenu.Draws.AASettings.colorAA[2],AutoCarry.PluginMenu.Draws.AASettings.colorAA[3],AutoCarry.PluginMenu.Draws.AASettings.colorAA[4]))
-	end
-	
-	if QReady and AutoCarry.PluginMenu.Draws.DrawQRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, QRange, ARGB(AutoCarry.PluginMenu.Draws.QSettings.colorAA[1],AutoCarry.PluginMenu.Draws.QSettings.colorAA[2],AutoCarry.PluginMenu.Draws.QSettings.colorAA[3],AutoCarry.PluginMenu.Draws.QSettings.colorAA[4]))
-	end	
-	if WReady and AutoCarry.PluginMenu.Draws.DrawWRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, WRange, ARGB(AutoCarry.PluginMenu.Draws.WSettings.colorAA[1],AutoCarry.PluginMenu.Draws.WSettings.colorAA[2],AutoCarry.PluginMenu.Draws.WSettings.colorAA[3],AutoCarry.PluginMenu.Draws.WSettings.colorAA[4]))
-	end	
-	if EReady and AutoCarry.PluginMenu.Draws.DrawERange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, ERange, ARGB(AutoCarry.PluginMenu.Draws.ESettings.colorAA[1],AutoCarry.PluginMenu.Draws.ESettings.colorAA[2],AutoCarry.PluginMenu.Draws.ESettings.colorAA[3],AutoCarry.PluginMenu.Draws.ESettings.colorAA[4]))
-	end	
-	if RReady and AutoCarry.PluginMenu.Draws.DrawRRange then
-		DrawCircleAA(myHero.x, myHero.y, myHero.z, RRange, ARGB(AutoCarry.PluginMenu.Draws.RSettings.colorAA[1],AutoCarry.PluginMenu.Draws.RSettings.colorAA[2],AutoCarry.PluginMenu.Draws.RSettings.colorAA[3],AutoCarry.PluginMenu.Draws.RSettings.colorAA[4]))
-	end
-
-
-end
-
-
---AA Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.AASettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---AA Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.AASettings.width, color, 75)	
-	end
-end 
-
---Q Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.QSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---Q Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.QSettings.width, color, 75)	
-	end
-end 	
-
---W Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.WSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---W Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.WSettings.width, color, 75)	
-	end
-end 	
---E Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.ESettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---E Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.ESettings.width, color, 75)	
-	end
-end 	
---R Range Circle QUality
-function DrawCircleNextLvlAA(x, y, z, radius, width, color, chordlength)
-	radius = radius or 300
-	quality = math.max(8,math.floor(AutoCarry.PluginMenu.Draws.RSettings.quality/math.deg((math.asin((chordlength/(2*radius)))))))
-	quality = 2 * math.pi / quality
-	radius = radius*.92
-	local points = {}
-	for theta = 0, 2 * math.pi + quality, quality do
-		local c = WorldToScreen(D3DXVECTOR3(x + radius * math.cos(theta), y, z - radius * math.sin(theta)))
-		points[#points + 1] = D3DXVECTOR2(c.x, c.y)
-	end
-	DrawLines2(points, width or 1, color or 4294967295)
-end
-
-
---R Range Circle Width
-function DrawCircleAA(x, y, z, radius, color)
-	local vPos1 = Vector(x, y, z)
-	local vPos2 = Vector(cameraPos.x, cameraPos.y, cameraPos.z)
-	local tPos = vPos1 - (vPos1 - vPos2):normalized() * radius
-	local sPos = WorldToScreen(D3DXVECTOR3(tPos.x, tPos.y, tPos.z))
-	if OnScreen({ x = sPos.x, y = sPos.y }, { x = sPos.x, y = sPos.y })  then
-		DrawCircleNextLvlAA(x, y, z, radius, AutoCarry.PluginMenu.Draws.RSettings.width, color, 75)	
-	end
-end 		
