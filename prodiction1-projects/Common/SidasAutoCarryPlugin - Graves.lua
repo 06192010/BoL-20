@@ -76,7 +76,7 @@ function PluginOnLoad()
 		AutoCarry.Skills:DisableAll()
 	end
 
-	PrintChat("<font color='#c9d7ff'> BFN Graves </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
+	PrintChat("<font color='#c9d7ff'>Big Fat Nidalee's Graves: </font><font color='#64f879'> "..version.." </font><font color='#c9d7ff'> loaded, happy elo boosting! </font>")
 
 
 
