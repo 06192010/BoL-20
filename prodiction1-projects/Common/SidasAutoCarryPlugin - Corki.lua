@@ -1,6 +1,6 @@
 if myHero.charName ~= "Corki" then return end
 
-local version = "0.06"
+local version = "0.07"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -31,7 +31,7 @@ local Target = AutoCarry.GetAttackTarget()
 local QReady, WReady, EReady, RReady = false, false, false, false
 local QRange, QSpeed, QDelay, QWidth = 825, 850, 0.5, 250
 local WRange = 800
-local ERange, ESpeed, EDelay, EWidth = 730, 902, 0.5, 100
+local ERange, ESpeed, EDelay, EWidth = 720, 902, 0.5, 100
 local RRange, RSpeed, RDelay, RWidth = 1225, 2000, 0.165, 80
 local ksfilter = false
 
