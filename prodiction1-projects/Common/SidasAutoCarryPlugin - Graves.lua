@@ -1,6 +1,6 @@
 if myHero.charName ~= "Graves" then return end
 
-local version = "0.06"
+local version = "0.07"
 
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
@@ -106,7 +106,7 @@ function KS()
 		if QReady and AutoCarry.PluginMenu.KSOptions.KSwithQ and ValidTarget(enemy, QRange) and enemy.health < getDmg("Q",enemy,myHero) and myHero.mana >= ManaCost(Q) then
 		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -135,7 +135,7 @@ function KS()
 		local rpos, rinfo = Prodiction.GetPrediction(enemy, RRange, RSpeed, RDelay, RWidth, myPlayer)
 		local Rcoll = Collision(RRange, RSpeed, RDelay, RWidth2)
 		
-		if rpos and rinfo.hitchance >= 1 and not Rcoll:GetMinionCollision(rpos, myHero) then
+		if rpos and rinfo.hitchance >= 2 and not Rcoll:GetMinionCollision(rpos, myHero) then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _R, toX = rpos.x, toY = rpos.z, fromX = rpos.x, fromY = rpos.z}):send(true)
 			else 
@@ -152,7 +152,7 @@ function KS()
 		local qpos, qinfo = Prodiction.GetPrediction(enemy, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		local Rcoll = Collision(RRange, RSpeed, RDelay, RWidth2)
 		
-		if rpos and qpos and rinfo.hitchance >= 1 and not Rcoll:GetMinionCollision(rpos, myHero) then
+		if rpos and qpos and rinfo.hitchance >= 2 and not Rcoll:GetMinionCollision(rpos, myHero) then
 		
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
@@ -186,7 +186,7 @@ function WQ ()
 			end
 		end	
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -199,7 +199,7 @@ function WQ ()
 		if myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -212,7 +212,7 @@ function WQ ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -238,7 +238,7 @@ function WQHarass1 ()
 		end	
 		
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -251,7 +251,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -264,7 +264,7 @@ function WQHarass1 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -274,7 +274,7 @@ function WQHarass1 ()
 	elseif AutoCarry.PluginMenu.Harass.Harass1UseQ and not AutoCarry.PluginMenu.Harass.Harass1UseW and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass1) and QReady and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -309,7 +309,7 @@ function WQHarass2 ()
 			end
 		end	
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -323,7 +323,7 @@ function WQHarass2 ()
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -335,7 +335,7 @@ function WQHarass2 ()
 	elseif AutoCarry.PluginMenu.Harass.Harass2UseQ and AutoCarry.PluginMenu.Harass.Harass2UseW and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2) and QReady and not WReady and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 1 then 
+		if qpos and qinfo.hitchance >= 2 then 
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
@@ -345,7 +345,7 @@ function WQHarass2 ()
 	elseif AutoCarry.PluginMenu.Harass.Harass2UseQ and not AutoCarry.PluginMenu.Harass.Harass2UseW and not mymanaislowerthen(AutoCarry.PluginMenu.Harass.ManaSliderHarass2) and QReady and myHero.mana >= ManaCost(Q) and GetDistance(Target) <= QRange then
 		local qpos, qinfo = Prodiction.GetPrediction(Target, QRange, QSpeed, QDelay, QWidth, myPlayer)
 		
-		if qpos and qinfo.hitchance >= 1 then
+		if qpos and qinfo.hitchance >= 2 then
 			if AutoCarry.PluginMenu.ProdictionSettings.UsePacketsCast then
 				Packet('S_CAST', {spellId = _Q, toX = qpos.x, toY = qpos.z, fromX = qpos.x, fromY = qpos.z}):send(true)
 			else 
